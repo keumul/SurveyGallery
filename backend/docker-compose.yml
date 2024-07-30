@@ -1,0 +1,16 @@
+version: "4.24.1"
+services:
+  surveygallery-db:
+    image: postgres:latest
+    ports:
+      - 5434:5432
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: meow
+      POSTGRES_DB: nest
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    name: mynetwork

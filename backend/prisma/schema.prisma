@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int      @id @default(autoincrement())
+  FIO            String
+  password       String
+  email          String   @unique
+  role           String
+  isConfirmed    Boolean
+  activationCode String?  @default(cuid())
+  createdAt      DateTime @default(now())
+
+  polls Poll[]
+  votes Vote[]
+
+  @@map("users")
+}
+
+model Cover {
+  id        Int      @id @default(autoincrement())
+  image     Bytes
+  createdAt DateTime @default(now())
+
+  pollId Int
+  poll   Poll @relation(fields: [pollId], references: [id], onDelete: Cascade)
+
+  @@map("covers")
+}
+
+model Poll {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  link        String?
+  status      String
+  type        String
+  createdAt   DateTime @default(now())
+
+  creatorId Int
+  creator   User @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  options Option[]
+  cover   Cover[]
+
+  @@map("polls")
+}
+
+model Option {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  votesCount  Int
+  createdAt   DateTime @default(now())
+
+  pollId Int
+  poll   Poll @relation(fields: [pollId], references: [id], onDelete: Cascade)
+
+  votes Vote[]
+
+  @@map("options")
+}
+
+model Vote {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  optionId Int
+  option   Option @relation(fields: [optionId], references: [id], onDelete: Cascade)
+
+  @@map("votes")
+}

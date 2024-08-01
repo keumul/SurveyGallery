@@ -17,9 +17,10 @@ const axiosClient = (token: string | null = null): AxiosInstance => {
 
     client.interceptors.request.use((config: any) => {
         const token = localStorage.getItem("ACCESS_TOKEN");
-        config.headers = config.headers || {};
         if(token) {
             config.headers.Authorization = `Bearer ${token}`;
+        } else {
+            console.warn("No access token found in localStorage");
         }
         return config;
     });

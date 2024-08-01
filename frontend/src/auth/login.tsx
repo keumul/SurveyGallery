@@ -3,7 +3,6 @@ import {
     Container,
     CssBaseline,
     Box,
-    Avatar,
     Typography,
     TextField,
     Button,
@@ -34,19 +33,21 @@ const Login: React.FC = () => {
     };
 
     const handleLogin = (e: any) => {
-        e.preventDefault();
+        e.preventDefault(); 
         const userData = {
             email: state.email,
             password: state.password,
             activationCode: state.activationCode
         };
         client.post("/auth/login", userData).then((response) => {
-            console.log(response.status, response.data);
+            localStorage.setItem('ACCESS_TOKEN', response.data.access_token);
             navigate('/home');
         }).catch((error) => {
             console.error("Error logging in:", error);
         });
     };
+
+
 
     return (
         <>

@@ -20,7 +20,12 @@ const Header: React.FC = () => {
                 >
                     <MenuIcon />
                 </IconButton>
-                <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                <Typography variant="h6" 
+                sx={{ flexGrow: 1, 
+                    textDecoration: 'none',
+                    color: 'white',
+                 }} component={Link} to="/home"
+                >
                     Survey Gallery
                 </Typography>
                 <Button color="inherit" component={Link} to="/login">Login</Button>

@@ -10,7 +10,9 @@ export class PollService {
 
     async findAllPolls() {
         try {
-            return await this.prisma.poll.findMany();
+            return await this.prisma.poll.findMany(
+                { include: { options: true } }
+            );
         } catch (error) {
             console.log(error);
         }
@@ -71,15 +73,41 @@ export class PollService {
         }
     }
 
-    async addVote(user, optionId: number) {
+    async alreadyVoted(user, pollId: number) {
         try {
-            const userVote = await this.prisma.vote.create({
-                data: {
-                    userId: +user.id,
-                    optionId: optionId
+            const options = await this.prisma.option.findMany({
+                where: {
+                    pollId: +pollId
                 }
             });
 
+            for (let option of options) {
+                const alreadyVote = await this.prisma.vote.findFirst({
+                    where: {
+                        userId: +user.id,
+                        optionId: +option.id
+                    }
+                });
+
+                if (alreadyVote !== null) {
+                    return true;
+                } else false;
+            }
+            
+        } catch (error) {
+            console.log('Error when checking if the user has already voted:', error);
+        }
+    }
+
+    async addVote(user, optionId: number) {
+        try {
+
+            const userVote = await this.prisma.vote.create({
+                data: {
+                    userId: +user.id,
+                    optionId: +optionId
+                }
+            });
             await this.prisma.option.update({
                 where: { id: +optionId },
                 data: {
@@ -88,6 +116,7 @@ export class PollService {
                     }
                 }
             });
+
             return userVote;
         } catch (error) {
             console.log('Error when adding a vote:', error);
@@ -140,39 +169,41 @@ export class PollService {
         }
     }
 
-    // async updateVote(id: number, dto: VoteDto) {
-    //     try {
-    //         const prevvote = await this.prisma.vote.findFirst({
-    //             where: { id }
-    //         });
+    async currentResult(id: number) {
+        try {
+            const poll = await this.prisma.poll.findFirst({
+                where: { id },
+                include: {
+                    options: true
+                }
+            });
+            for(let option1 of poll.options) {
+                for(let option2 of poll.options) {
+                    if(option1.id !== option2.id) {
+                        if(option1.votesCount < option2.votesCount) {
+                            return option2;
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            console.log('Error when fetching the survey:', error);
+        }
+    }
 
-    //         if (!prevvote) {
-    //             console.error('Vote not found!');
-    //             return;
-    //         } else {
-    //             const newvote = await this.prisma.vote.update({
-    //                 where: { id },
-    //                 data: {
-    //                     userId: +dto.userId,
-    //                     optionId: +dto.optionId
-    //                 }
-    //             });
-
-    //             await this.prisma.option.update({
-    //                 where: { id: +dto.optionId },
-    //                 data: {
-    //                     votesCount: {
-    //                         increment: 1
-    //                     }
-    //                 }
-    //             });
-
-    //         }
-    
-    //     } catch (error) {
-    //         console.log('Error when updating the survey:', error);
-    //     }
-    // }
+    async findPollByOptionId(optionId: number) {
+        try {
+            const option = await this.prisma.option.findFirst({
+                where: { id: optionId },
+                include: {
+                    poll: true
+                }
+            });
+            return option.poll;
+        } catch (error) {
+            console.log('Error when fetching the survey:', error);
+        }
+    }
 
     async closePoll(id: number) {
         try {

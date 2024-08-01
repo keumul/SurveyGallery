@@ -22,6 +22,16 @@ export class PollController {
         return this.pollService.findPoll(+id);
     }
 
+    @Get('winner/:id')
+    currentWinner(@Param('id') id: string) {
+        return this.pollService.currentResult(+id);
+    }
+
+    @Get('option/:id')
+    findPollByOptionId(@Param('id') id: string) {
+        return this.pollService.findPollByOptionId(+id);
+    }
+
     @Post()
     createPoll(@GetUser() user: User, @Body() pollDto: PollDto) {
         return this.pollService.createPoll(user, pollDto);
@@ -45,6 +55,11 @@ export class PollController {
     @Patch('option/:id')
     updateOption(@Param('id') id: string, @Body() optionDto: OptionDto) {
         return this.pollService.updateOption(+id, optionDto);
+    }
+
+    @Get('vote/:pollId')
+    alreadyVoted(@GetUser() user: User, @Param('id') id: string) {
+        return this.pollService.alreadyVoted(user, +id);
     }
 
     // @Patch('vote/:id')

@@ -58,7 +58,7 @@ export class PollController {
     }
 
     @Get('vote/:pollId')
-    alreadyVoted(@GetUser() user: User, @Param('id') id: string) {
+    alreadyVoted(@GetUser() user: User, @Param('pollId') id: string) {
         return this.pollService.alreadyVoted(user, +id);
     }
 

@@ -11,14 +11,12 @@ export class CoverService {
             if (existingCover.length > 0) {
                 await this.deleteCover(existingCover[0].id);
             }
-
             await this.prisma.cover.create({
                 data: {
-                    image: uploadedPhoto.photo,
+                    image: uploadedPhoto.buffer,
                     pollId: +id,
                 }
             });
-
         } catch (error) {
             console.log('Error when uploading the cover:', error);
         }
@@ -32,6 +30,7 @@ export class CoverService {
                 },
                 select: {
                     id: true,
+                    image: true,
                 }
             });
         } catch (error) {

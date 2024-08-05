@@ -39,7 +39,8 @@ export class PollService {
                     description: dto.description,
                     status: dto.status,
                     type: dto.type,
-                    creatorId: +user.id
+                    creatorId: +user.id,
+                    link: dto.link,
                 }
             });
             return poll;
@@ -89,9 +90,10 @@ export class PollService {
                     }
                 });
 
-                if (alreadyVote !== null) {
+                if (alreadyVote) {
                     return true;
-                } else false;
+                } 
+                return false;
             }
             
         } catch (error) {
@@ -137,7 +139,8 @@ export class PollService {
                     where: { id },
                     data: {
                         title: dto.title,
-                        description: dto.description
+                        description: dto.description,
+                        link: dto.link
                     }
                 });
             }

@@ -1,3 +1,13 @@
+interface User {
+    FIO: string;
+    phoneNumber: string;
+    email: string;
+    password: string;
+    role: string;
+    isConfirmed: boolean;
+    activationCode: string;
+}
+
 interface Poll {
     id: number;
     title: string;
@@ -24,4 +34,4 @@ interface Vote {
 }
 
 
-export type { Poll, Option, Vote };
+export type { Poll, Option, Vote, User };

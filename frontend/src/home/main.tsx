@@ -13,11 +13,13 @@ const Home: React.FC = (props) => {
             .get("/poll")
             .then((response) => {
                 setPolls(response.data);
+                
             })
             .catch((error) => {
                 console.error("Error fetching polls:", error);
             });
     }, []);
+
 
     return (
         <>
@@ -35,7 +37,7 @@ const Home: React.FC = (props) => {
                                     justifyContent: 'center',
                                     alignItems: 'center',
                                     color: 'white',
-                                    backgroundColor: '#818CF8',
+                                    background: '#818CF8',
                                     '&:hover': {
                                         backgroundColor: 'darkgrey',
                                     }

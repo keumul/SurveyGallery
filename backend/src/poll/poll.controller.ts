@@ -32,6 +32,11 @@ export class PollController {
         return this.pollService.findPollByOptionId(+id);
     }
 
+    @Get('option/poll/:id')
+    findAllOptionsByPoll(@Param('id') id: string) {
+        return this.pollService.findAllOptions(+id);
+    }
+
     @Post()
     createPoll(@GetUser() user: User, @Body() pollDto: PollDto) {
         return this.pollService.createPoll(user, pollDto);

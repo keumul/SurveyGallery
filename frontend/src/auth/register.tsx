@@ -1,9 +1,7 @@
-export const metadata = {
-    title: "Sign In - Simple",
-    description: "Page description",
-  };
-  
+import { useTranslation } from "react-i18next";
+
   export default function Register() {
+    const { t } = useTranslation();
     return (
       <>
         <>
@@ -47,7 +45,7 @@ export const metadata = {
             </div>
             <div className="mt-6">
               <button className="btn w-full bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] bg-[bottom] text-white shadow hover:bg-[length:100%_150%]">
-                Sign In
+                {t("loginMessage")}
               </button>
             </div>
           </form>

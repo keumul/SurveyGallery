@@ -118,10 +118,21 @@ export class PollService {
                     }
                 }
             });
-
             return userVote;
         } catch (error) {
             console.log('Error when adding a vote:', error);
+        }
+    }
+
+    async findAllOptions(id: number) {
+        try {
+            return await this.prisma.option.findMany({
+                where: {
+                    pollId: +id
+                }
+            });
+        } catch (error) {
+            console.log('Error when fetching the points:', error);
         }
     }
 
@@ -140,7 +151,8 @@ export class PollService {
                     data: {
                         title: dto.title,
                         description: dto.description,
-                        link: dto.link
+                        link: dto.link,
+                        status: dto.status,
                     }
                 });
             }

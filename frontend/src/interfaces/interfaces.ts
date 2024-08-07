@@ -13,8 +13,8 @@ interface Poll {
     title: string;
     description: string;
     status: string;
-    type: string;
-    creatorId: number;
+    type?: string;
+    creatorId?: number;
     link: string;
     coverId: number;
     options: Option[];

@@ -17,6 +17,11 @@ export class CoverController {
         return this.coverService.getCover(+id);
     }
 
+    @Get()
+    async getCovers() {
+        return this.coverService.getCovers();
+    }
+
     @Get('show/:id')
     async showCover(@Param('id') id: string) {
         return this.coverService.showCover(+id);

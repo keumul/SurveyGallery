@@ -22,6 +22,14 @@ export class CoverService {
         }
     }
 
+    async getCovers() {
+        try {
+            return await this.prisma.cover.findMany();
+        } catch (error) {
+            console.log('Error when fetching the covers:', error);
+        }
+    }
+
     async getCover(id: number) {
         try {
             return await this.prisma.cover.findMany({

@@ -15,6 +15,7 @@ export class PollDto {
 
     creatorId: number;
 
+    @IsString()
     link: string;
 
     coverId: number;

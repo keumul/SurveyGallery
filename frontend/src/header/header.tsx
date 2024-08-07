@@ -13,19 +13,26 @@ import BallotRoundedIcon from '@mui/icons-material/BallotRounded';
 import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded';
 import axiosClient from '../services/axiosInstance';
 import { User } from '../interfaces/interfaces';
+import { useTranslation } from 'react-i18next';
+import LanguageSelector from '../localization/languageSelector';
 
 const Header: React.FC = () => {
+    const { t } = useTranslation();
     const client = axiosClient();
     const [openDrawer, setOpenDrawer] = React.useState(false);
     const [user, setUser] = React.useState<User>();
+    const [isRegistered, setIsRegistered] = React.useState(false);
 
     useEffect(() => {
-        // getUser();
+        // register or not 
+        getUser();
     })
 
     const getUser = () => {
         client.get('/users/me').then((response) => {
-            setUser(response.data);
+            if (response.data) {
+                setIsRegistered(true);
+            }
         }).catch((error) => {
             console.error("Error fetching user:", error);
         }
@@ -43,9 +50,9 @@ const Header: React.FC = () => {
                     <span className='main-span'>{user?.FIO}</span>!</Typography>
             </Box>
             <List>
-                {['Add poll', 'Edit polls', 'All polls'].map((text, index) => (
+                {[t('addPollMessage'), t('editPollMessage'), t('allPollMessage')].map((text, index) => (
                     <ListItem key={text} disablePadding>
-                        {index === 0 ? <ListItemButton component={Link} to="/login">
+                        {index === 0 ? <ListItemButton component={Link} to="/creator">
                             <AddToPhotosRoundedIcon />
                             <ListItemText primary={text} sx={{ margin: '0 0 0 30px' }} />
                         </ListItemButton> :
@@ -97,10 +104,17 @@ const Header: React.FC = () => {
                         color: 'white',
                     }} component={Link} to="/home"
                 >
-                    Survey Gallery
+                    {t('logoMessage')}
                 </Typography>
-                <Button color="inherit" component={Link} to="/login">Login</Button>
-                <Button color="inherit" component={Link} to="/register">Register</Button>
+                <LanguageSelector />
+                <>
+                    {!isRegistered ?
+                        <>
+                            <Button color="inherit" component={Link} to="/login">{t('loginMessage')}</Button>
+                            <Button color="inherit" component={Link} to="/register">{t('registerMessage')}</Button>
+                        </> : <></>
+                    }
+                </>
             </Toolbar>
         </AppBar>
     );

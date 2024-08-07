@@ -11,11 +11,10 @@ import {
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axiosClient from '../services/axiosInstance';
-export const metadata = {
-    title: "Login | Survey Gallery"
-};
+import { useTranslation } from 'react-i18next';
 
 const Login: React.FC = () => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const client = axiosClient();
     const [state, setState] = useState({
@@ -61,21 +60,17 @@ const Login: React.FC = () => {
                         flexDirection: 'column',
                         alignItems: 'center',
                     }}>
-                    {/* <Avatar
-                        sx={{ m: 1, bgcolor: "#0EA5E9" }}>
-                        <BallotRounded />
-                    </Avatar> */}
 
                     <Typography variant='h3'
                         sx={{ color: "#0EA5E9" }}>
-                        Login</Typography>
+                        {t('loginMessage')}</Typography>
                     <Box sx={{ mt: 1 }}>
                         <TextField
                             margin="normal"
                             required
                             fullWidth
                             id="email"
-                            label="Email Address"
+                            label={t('emailMessage')}
                             name="email"
                             autoFocus
                             value={state.email}
@@ -88,7 +83,7 @@ const Login: React.FC = () => {
                             required
                             fullWidth
                             name="password"
-                            label="Password"
+                            label={t('passwordMessage')}
                             type="password"
                             id="password"
                             value={state.password}
@@ -100,7 +95,7 @@ const Login: React.FC = () => {
                             required
                             fullWidth
                             name="activationCode"
-                            label="Activation Code"
+                            label={t('codeMessage')}
                             type="activationCode"
                             id="activationCode"
                             value={state.activationCode}
@@ -111,7 +106,7 @@ const Login: React.FC = () => {
                             variant="contained"
                             sx={{ mt: 3, mb: 2, bgcolor: "#0EA5E9" }}
                         >
-                            Login
+                            {t("loginMessage")}
                         </Button>
                         <Grid container justifyContent={"flex-end"}>
                             <Grid item>

@@ -3,8 +3,10 @@ import axiosClient from '../services/axiosInstance';
 import { Poll } from '../interfaces/interfaces';
 import { Button } from '@mui/material';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const Home: React.FC = (props) => {
+    const { t } = useTranslation();
     const client = axiosClient();
     const [polls, setPolls] = useState<Poll[]>([]);
 
@@ -19,7 +21,6 @@ const Home: React.FC = (props) => {
                 console.error("Error fetching polls:", error);
             });
     }, []);
-
 
     return (
         <>

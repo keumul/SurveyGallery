@@ -4,8 +4,10 @@ import axiosClient from '../services/axiosInstance';
 import { Poll } from '../interfaces/interfaces';
 import { useParams } from 'react-router-dom';
 import Control from '../header/control';
+import { useTranslation } from 'react-i18next';
 
 const PollCard: React.FC = () => {
+    const { t } = useTranslation();
     const client = axiosClient();
     const [poll, setPoll] = useState<Poll>();
     const { pollId } = useParams<{ pollId: string }>();
@@ -140,7 +142,7 @@ const PollCard: React.FC = () => {
                                                         </Box>
                                                     </Box>
                                                     <Typography variant="caption">
-                                                        {option.votesCount} votes
+                                                        {option.votesCount}{t('votesMessage')}
                                                     </Typography>
                                                 </div>
                                             }
@@ -149,7 +151,7 @@ const PollCard: React.FC = () => {
                                     ))}
                                 </RadioGroup>
                                 {answerIsOpen ? (
-                                    <p className='tip-title'>You cannot vote again</p>
+                                    <p className='tip-title'>{t('cannotVoteMessage')}</p>
                                 ) : (<p></p>)}
                             </FormControl>
                             <FormControl>
@@ -161,11 +163,10 @@ const PollCard: React.FC = () => {
                         <Button sx={{ align: 'center' }}
                             type="submit"
                             variant="outlined"
-                            disabled={selectedOptions === null || answerIsOpen}>Result</Button>
+                            disabled={selectedOptions === null || answerIsOpen}>{t('resultMessage')}</Button>
                         {answerIsOpen ? (
-                            <p className='info-title'>Current winner is
-                                <span className='higlight-title'> {winner}</span>
-                            </p>
+                            <p className='info-title'><span className='higlight-title'>{winner}</span>
+                            {t('winnerMessage')}</p>
                         ) : (
                             <p>{errorMessages}</p>
                         )}

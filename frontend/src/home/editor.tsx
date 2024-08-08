@@ -8,20 +8,21 @@ const Editor = () => {
   const { t } = useTranslation();
   const client = axiosClient();
   const [polls, setPolls] = useState<Poll[]>([]);
-  const [newPoll, setNewPoll] = useState<Poll | null>(null);
   const [selectedPollId, setSelectedPollId] = useState<number | null>(null);
   const [covers, setCovers] = useState([]);
+  const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
+  const [previewSrc, setPreviewSrc] = React.useState('');
 
   useEffect(() => {
     client.get('/poll').then((response) => {
       setPolls(response.data);
       client.get('/cover').then((response) => {
-        for(let i = 0; i < response.data.length; i++) {
+        for (let i = 0; i < response.data.length; i++) {
           const base64Flag = 'data:image/jpeg;base64,';
           const imageStr = arrayBufferToBase64(response.data[i].image.data);
           setCovers(response.data.map((cover: any) => base64Flag + imageStr));
           console.log(covers);
-          
+
         }
       }).catch((error) => {
         console.error("Error fetching covers:", error);
@@ -53,13 +54,6 @@ const Editor = () => {
     );
   }
 
-  // const addRow = () => {
-  //   const maxId = Math.max(...polls.map(poll => poll.id));
-  //   const newId = maxId + 1;
-  //   const newPoll: Poll = { id: newId, title: '', description: '', link: '', status: 'active', type: 'poll', creatorId: 1, coverId: 1, options: [] };
-  //   setPolls([...polls, newPoll]);
-  // };
-
   const deleteRow = (id: number) => {
     client.delete(`/poll/${id}`).then(() => {
       client.get('/poll').then((response) => {
@@ -72,28 +66,17 @@ const Editor = () => {
     });
   }
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
-    const file = e.target.files?.[0]; 
+  const handleСhooseCover = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files ? e.target.files[0] : null;
+    setSelectedFile(file);
     if (file) {
-      const reader = new FileReader(); 
+      const reader = new FileReader();
       reader.onloadend = () => {
-        const photoData = reader.result as string; 
-        client.post(`/cover/upload/${id}`, { image: photoData }).then(() => {
-          client.get('/cover').then((response) => {
-            console.log(response.data);
-          }).catch((error) => {
-            console.error("Error fetching covers:", error);
-          });
-        }).catch((error) => {
-          console.error("Error uploading cover:", error);
-        });
+        setPreviewSrc(reader.result as string);
       };
-        // setPolls((prevPolls) => 
-        //   prevPolls.map((poll) =>
-        //     poll.id === id ? { ...poll, photo: photoData } : poll
-        //   )
-        // );
       reader.readAsDataURL(file);
+    } else {
+      setPreviewSrc('');
     }
   };
 
@@ -110,8 +93,22 @@ const Editor = () => {
       const selectedPoll = polls.find(poll => poll.id === selectedPollId);
       if (selectedPoll) {
         client.patch(`/poll/${selectedPoll.id}`, selectedPoll).then(() => {
+          if (!selectedFile) {
+            console.error('No file selected');
+            return;
+          }
+          const formData = new FormData();
+          formData.append('photo', selectedFile);
+          client.post(`/cover/upload/${selectedPoll.id}`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            }
+          }).then(() => {
+            console.log('Cover uploaded successfully');
+          })
           client.get('/poll').then((response) => {
             setPolls(response.data);
+
           }).catch((error) => {
             console.error("Error fetching polls:", error);
           });
@@ -127,10 +124,10 @@ const Editor = () => {
     const bytes = new Uint8Array(buffer);
     const length = bytes.byteLength;
     for (let i = 0; i < length; i++) {
-        binary += String.fromCharCode(bytes[i]);
+      binary += String.fromCharCode(bytes[i]);
     }
     return window.btoa(binary);
-};
+  };
 
   return (
     <div>
@@ -169,7 +166,7 @@ const Editor = () => {
                       <TableCell>{poll.link}</TableCell>
                       <TableCell>{poll.status}</TableCell>
                       <TableCell>
-                      <img src={covers[poll.coverId]} className='small-cover'/>
+                        <img src={covers[poll.coverId]} className='small-cover' />
                       </TableCell>
                     </>
                   ) : (
@@ -208,18 +205,14 @@ const Editor = () => {
                         </select>
                       </TableCell>
                       <TableCell>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleFileChange(e, poll.id)}
-                        />
-                        {poll.coverId && (
-                          <img
-                            src={poll.coverId.toString()}
-                            alt="cover"
-                            style={{ width: '50px', height: '50px', marginTop: '10px' }}
+                        <Button>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleСhooseCover(e)}
                           />
-                        )}
+                        </Button>
+                        {previewSrc && <img src={previewSrc} alt="Preview" width="200" />}
                       </TableCell>
                     </>
                   )}

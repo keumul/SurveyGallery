@@ -42,6 +42,7 @@ i18n.init({
         'votesMessage': ' votes',
         'cannotVoteMessage': 'You have already voted',
         'nextMessage': 'Next',
+        'addOptionMessage': 'Add +',
         'optionsTitleMessage': 'Current options',
       }
     },
@@ -75,6 +76,7 @@ i18n.init({
         'votesMessage': ' голос(-ов)',
         'cannotVoteMessage': 'Вы уже проголосовали',
         'nextMessage': 'Далее',
+        'addOptionMessage': 'Добавить +',
         'optionsTitleMessage': 'Текущие варианты ответов',
       }
     }

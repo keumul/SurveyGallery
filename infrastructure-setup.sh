@@ -14,7 +14,3 @@ echo \
 sudo apt-get update
 
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
-
-git clone https://github.com/keumul/SurveyGallery.git
-cd SurveyGallery || exit 
-git checkout feature/script_for_automatic_deployment

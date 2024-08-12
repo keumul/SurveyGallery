@@ -1,6 +1,7 @@
 version: "4.24.1"
 services:
-  surveygallery-db:
+  survey-gallery-db:
+    container_name: survey-gallery-db
     image: postgres:latest
     ports:
       - 5434:5432
@@ -11,19 +12,21 @@ services:
     networks:
       - mynetwork
 
-  happyning:
+  survey-gallery-backend:
+    container_name: survey-gallery-backend
     image: survey-gallery-backend:latest
     ports:
       - 5000:5000
     environment:
-      DATABASE_URL: postgresql://root:meow@dev-db:5432/nest?schema=public
+      DATABASE_URL: postgresql://root:meow@survey-gallery-db:5432/nest?schema=public
     networks:
       - mynetwork
 
-  happyning-frontend:
+  survey-gallery-frontend:
+    container_name: survey-gallery-frontend
     image: survey-gallery-frontend:latest
     ports:
-      - 5100:80
+      - 80:80
     networks:
       - mynetwork
 networks:

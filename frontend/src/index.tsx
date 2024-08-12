@@ -25,7 +25,7 @@ i18n.init({
         'codeMessage': 'Activation code',
         'addPollMessage': 'Add poll',
         'editPollMessage': 'Edit polls',
-        'allPollMessage': 'All polls',
+        'allPollMessage': 'List of polls',
         'titleMessage': 'Title',
         'descriptionMessage': 'Description',
         'optionMessage': 'Option',
@@ -44,6 +44,9 @@ i18n.init({
         'nextMessage': 'Next',
         'addOptionMessage': 'Add +',
         'optionsTitleMessage': 'Current options',
+        'searchMessage': 'Search',
+        'previewImageMessage': 'Preview cover',
+        'currentImageMessage': 'Current cover',
       }
     },
     rus: {
@@ -59,7 +62,7 @@ i18n.init({
         'codeMessage': 'Код активации',
         'addPollMessage': 'Добавить опрос',
         'editPollMessage': 'Редактировать опросы',
-        'allPollMessage': 'Все опросы',
+        'allPollMessage': 'Список опросов',
         'titleMessage': 'Название',
         'descriptionMessage': 'Описание',
         'optionMessage': 'Опции',
@@ -78,6 +81,9 @@ i18n.init({
         'nextMessage': 'Далее',
         'addOptionMessage': 'Добавить +',
         'optionsTitleMessage': 'Текущие варианты ответов',
+        'searchMessage': 'Поиск',
+        'previewImageMessage': 'Превью обложки',
+        'currentImageMessage': 'Текущая обложка',
       }
     }
   }

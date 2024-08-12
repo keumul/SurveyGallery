@@ -1,0 +1,31 @@
+version: "4.24.1"
+services:
+  surveygallery-db:
+    image: postgres:latest
+    ports:
+      - 5434:5432
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: meow
+      POSTGRES_DB: nest
+    networks:
+      - mynetwork
+
+  happyning:
+    image: survey-gallery-backend:latest
+    ports:
+      - 5000:5000
+    environment:
+      DATABASE_URL: postgresql://root:meow@dev-db:5432/nest?schema=public
+    networks:
+      - mynetwork
+
+  happyning-frontend:
+    image: survey-gallery-frontend:latest
+    ports:
+      - 5100:80
+    networks:
+      - mynetwork
+networks:
+  mynetwork:
+    name: mynetwork

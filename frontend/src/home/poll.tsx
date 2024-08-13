@@ -1,4 +1,4 @@
-import { Box, Button, FormControl, FormControlLabel, Radio, RadioGroup, Typography } from '@mui/material';
+import { Box, Button, FormControl, FormControlLabel, Grid, Link, Radio, RadioGroup, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import axiosClient from '../services/axiosInstance';
 import { Poll } from '../interfaces/interfaces';
@@ -16,7 +16,6 @@ const PollCard: React.FC = () => {
     const [selectedOptions, setSelectedOptions] = useState<number | null>(null);
     const [answerIsOpen, setAnswerIsOpen] = useState<boolean>(false);
     const [errorMessages, setErrorMessages] = useState<string[]>([]);
-    const [image, setImage] = useState('');
 
     useEffect(() => {
         client
@@ -33,30 +32,11 @@ const PollCard: React.FC = () => {
                             console.log('User already voted');
                         }
                     })
-                client.
-                    get(`/cover/${pollId}`).
-                    then(buffer => {
-                        const base64Flag = 'data:image/jpeg;base64,';
-                        const imageStr = arrayBufferToBase64(buffer.data[0].image.data);
-                        setImage(base64Flag + imageStr);
-                    }).catch((error) => {
-                        console.error("Error fetching image:", error);
-                    })
             })
             .catch((error) => {
                 console.error("Error fetching polls:", error);
             });
     }, []);
-
-    const arrayBufferToBase64 = (buffer: any) => {
-        let binary = '';
-        const bytes = new Uint8Array(buffer);
-        const length = bytes.byteLength;
-        for (let i = 0; i < length; i++) {
-            binary += String.fromCharCode(bytes[i]);
-        }
-        return window.btoa(binary);
-    };
 
     const handleOptionChange = (optionId: number) => {
         setSelectedOptions(optionId);
@@ -106,6 +86,9 @@ const PollCard: React.FC = () => {
                                     justifyContent: 'center',
                                     alignItems: 'center',
                                 }}>
+                                <div className='subtitle-2'>
+                                    {poll?.description}<br />
+                                    {t('linkMessage')}: <Link>{poll?.link}</Link></div>
                                 <RadioGroup
                                     aria-label={poll?.title}
                                     name={`poll-${pollId}`}
@@ -154,10 +137,6 @@ const PollCard: React.FC = () => {
                                     <p className='tip-title'>{t('cannotVoteMessage')}</p>
                                 ) : (<p></p>)}
                             </FormControl>
-                            <FormControl>
-                                <img src={image} className='cover'/>
-                                <h1 className='tip-title'>{poll?.link}</h1>
-                            </FormControl>
                         </div>
 
                         <Button sx={{ align: 'center' }}
@@ -166,7 +145,7 @@ const PollCard: React.FC = () => {
                             disabled={selectedOptions === null || answerIsOpen}>{t('resultMessage')}</Button>
                         {answerIsOpen ? (
                             <p className='info-title'><span className='higlight-title'>{winner}</span>
-                            {t('winnerMessage')}</p>
+                                {t('winnerMessage')}</p>
                         ) : (
                             <p>{errorMessages}</p>
                         )}

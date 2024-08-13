@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axiosClient from "../services/axiosInstance";
 import { Poll, Option } from "../interfaces/interfaces";
-import { Button, Collapse, Grid, List, ListItem, ListItemButton, ListItemText, TextField, Typography } from "@mui/material";
+import { Button, Collapse, Grid, InputLabel, List, ListItem, ListItemButton, ListItemText, TextField, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import PublishedWithChangesRoundedIcon from '@mui/icons-material/PublishedWithChangesRounded';
+import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
+import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 
 const Editor = () => {
   const { t } = useTranslation();
@@ -14,10 +18,16 @@ const Editor = () => {
   const [polls, setPolls] = useState<Poll[]>([]);
   const [selectedPollId, setSelectedPollId] = useState<number | null>(null);
   const [covers, setCovers] = useState<{ id: number; cover: string }[]>([]);
-  const [cover, setCover] = useState('');
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [previewSrc, setPreviewSrc] = React.useState('');
-  const [isExtendedCover, setExtendedCover] = useState<boolean>(false);
+  const [searchText, setSearchText] = useState<string>('');
+  const [option, setOption] = React.useState<Option>({
+    id: 0,
+    title: "",
+    description: "",
+    pollId: 0,
+    votesCount: 0
+  });
   const [options, setOptions] = useState<Option[]>([]);
   const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
 
@@ -53,7 +63,7 @@ const Editor = () => {
 
   const selectPoll = (poll: Poll) => {
     const isOpen = open.find((openPoll) => openPoll.id === poll.id);
-    if (isOpen) { 
+    if (isOpen) {
       setOpen((prevOpen) => prevOpen.filter((openPoll) => openPoll.id !== poll.id));
       setSelectedPollId(null);
       console.log('poll is closed');
@@ -65,6 +75,30 @@ const Editor = () => {
     }
   };
 
+
+  const addOption = () => {
+    client.post(`/poll/${selectedPollId}`, option).then(() => {
+      client.get(`/poll/option/poll/${selectedPollId}`).then((response) => {
+        setOptions(response.data);
+      }).catch((error) => {
+        console.error("Error fetching options:", error);
+      });
+    }).catch((error) => {
+      console.error("Error creating option:", error);
+    });
+  }
+
+  const deleteOption = (id: number) => {
+    client.delete(`/poll/option/${id}`).then(() => {
+      client.get(`/poll/option/poll/${selectedPollId}`).then((response) => {
+        setOptions(response.data);
+      }).catch((error) => {
+        console.error("Error fetching options:", error);
+      });
+    }).catch((error) => {
+      console.error("Error deleting option:", error);
+    });
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLDataElement>, id: number, field: keyof Poll) => {
     const newValue = e.target.value;
@@ -84,7 +118,8 @@ const Editor = () => {
     );
   }
 
-  const handleOptionChange = (e: React.ChangeEvent<HTMLInputElement>, id: number, field: keyof Option) => {
+  const handleOptionChange = (e: React.ChangeEvent<HTMLDataElement>, id: number, field: keyof Option) => {
+    setSelectedOptionId(id);
     const newValue = e.target.value;
     setOptions((prevOptions) =>
       prevOptions.map((option) =>
@@ -119,13 +154,13 @@ const Editor = () => {
     }
   };
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const searchValue = e.target.value;
-    polls.filter((poll) => {
-      if (poll.title.includes(searchValue)) {
-        return poll;
-      }
-    });
+  const handleSearch = (searchText: string) => {
+    setSearchText(searchText);
+  }
+
+  const searchPoll = (searchText: string) => {
+    polls.find(poll => poll.title === searchText); 
+    setPolls(polls.filter(poll => poll.title === searchText));
   }
 
   const handleSubmit = (e: any) => {
@@ -164,8 +199,36 @@ const Editor = () => {
           console.error("Error updating poll:", error);
         });
       }
+    } else if (buttonName === 'update-option-button') {
+      if (selectedOptionId) {
+        client.patch(`/poll/option/${selectedOptionId}`, options.find(option => option.id === selectedOptionId)).then(() => {
+          client.get('/poll').then((response) => {
+            setPolls(response.data);
+          }).catch((error) => {
+            console.error("Error fetching polls:", error);
+          });
+        }).catch((error) => {
+          console.error("Error updating option:", error);
+        });
+      }
+    } else if (buttonName === 'add-option-button') {
+      addOption();
+    } else if (buttonName === 'delete-option-button') {
+      if (selectedOptionId) {
+        deleteOption(selectedOptionId);
+      }
+    } else if (buttonName === 'search-button') {
+      searchPoll(searchText);
     }
   };
+
+  const handleChangeOption = (e: any, field: keyof Option) => {
+    const { value } = e.target;
+    setOption((prevOptions) => ({
+      ...prevOptions,
+      [field]: value,
+    }));
+  }
 
   const arrayBufferToBase64 = (buffer: any) => {
     let binary = '';
@@ -180,34 +243,34 @@ const Editor = () => {
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        <form action="" className="search-bar">
-          <input type="search" name="search"
+        <div className="search">
+          <input type="search" name="search-text" 
             placeholder={t('searchMessage')}
-            onChange={handleSearch}
-            pattern=".*\S.*" required />
-          <button className="search-btn" type="submit">
-            <span>{t('searchMessage')}</span>
-          </button>
-        </form>
-        <Button type="submit" name="update-button" variant="contained" className="main-button">{t('saveMessage')}</Button>
+            onChange={(e) => handleSearch(e.target.value)}
+            pattern=".*\S.*" required/>
+          <Button className="search-button" type="submit" variant="contained">
+            <SearchRoundedIcon />
+          </Button>
+        </div>
+        <Button type="submit" name="update-button" variant="contained" className="main-button">{t('updateMessage')}</Button>
         <Button type="submit" name="delete-button" variant="contained" className="main-button">{t('deleteMessage')}</Button>
 
         <List subheader={
-          <Typography>{t('allPollMessage')}</Typography>
+          <h3 className="subtitle-1">{t('allPollMessage')}</h3>
         }>
           {polls.map((poll) => (
             <>
               <ListItemButton key={poll.id}
                 onClick={() => selectPoll(poll)}>
                 {poll.id === selectedPollId ?
-                <>
-                <ListItemText primary={
-                  <div style={{display: 'flex', alignItems: 'center'}}>
-                    <Typography>{poll.title}&nbsp;</Typography>
-                  <CheckCircleRoundedIcon className='status' fontSize="small"/></div>} />
-                </>
-                :<ListItemText primary={poll.title} />}
-                {open ? <ExpandLess /> : <ExpandMore />}
+                  <>
+                    <ListItemText primary={
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <Typography>{poll.title}&nbsp;</Typography>
+                        <CheckCircleRoundedIcon className='status' fontSize="small" /></div>} />
+                  </>
+                  : <ListItemText primary={poll.title} />}
+                {open.find(open => open.id === poll.id)?.open ? <ExpandLess /> : <ExpandMore />}
               </ListItemButton>
               <Collapse in={open.find(open => open.id === poll.id)?.open} timeout="auto" unmountOnExit>
                 <List disablePadding>
@@ -275,6 +338,76 @@ const Editor = () => {
                             onChange={(e) => handleСhooseCover(e)}
                           />
                         </Button>
+                      </Grid>
+
+                      <Grid>
+                        <Typography sx={{ margin: '0px 17px' }}>{t('optionsTitleMessage')}</Typography>
+                        <List>
+                          {options.filter(option => option.pollId === poll.id).map((option) => (
+                            <ListItem key={option.id}>
+                              <Grid container spacing={2}>
+                                <Grid item xs={6}>
+                                  <TextField
+                                    variant="outlined"
+                                    type="text"
+                                    label={t('titleMessage')}
+                                    value={option.title}
+                                    className="table-input"
+                                    onChange={(e) => handleOptionChange(e, option.id, 'title')}
+                                  />
+                                </Grid>
+                                <Grid item xs={6}>
+                                  <TextField
+                                    variant="outlined"
+                                    type="text"
+                                    label={t('descriptionMessage')}
+                                    value={option.description}
+                                    className="table-input"
+                                    onChange={(e) => handleOptionChange(e, option.id, 'description')}
+                                  />
+                                </Grid>
+                              </Grid>
+                              <Button type="submit" name="update-option-button" variant="contained" className="main-button" >
+                                <PublishedWithChangesRoundedIcon />
+                              </Button>
+                              <Button type="submit" name="delete-option-button" variant="contained" className="main-button" >
+                                <DeleteForeverRoundedIcon />
+                              </Button>
+                            </ListItem>
+                          ))}
+                        </List>
+                        <Grid sx={{ marginLeft: '17px' }}>
+                          <Typography sx={{ marginBottom: '10px' }}>{t('addOptionMessage')}</Typography>
+                            <Grid container spacing={2}>
+                              <Grid item xs={4}>
+                                <TextField
+                                  id="title_option"
+                                  name="title_option"
+                                  label={t("titleMessage")}
+                                  value={option?.title}
+                                  className="table-input"
+                                  autoComplete="off"
+                                  variant="outlined"
+                                  onChange={(e) => handleChangeOption(e, 'title')}
+                                />
+                              </Grid>
+                              <Grid item xs={6}>
+                                <TextField
+                                  id="description_option"
+                                  label={t("descriptionMessage")}
+                                  value={option?.description}
+                                  className="table-input"
+                                  multiline
+                                  onChange={(e) => handleChangeOption(e, 'description')}
+                                />
+                              </Grid>
+                              <Grid item xs={2}>
+                                <Button variant="contained" className="main-button" type="submit" name="add-option-button">
+                                  <AddCircleRoundedIcon />
+                                </Button>
+                              </Grid>
+                            </Grid>
+                        </Grid>
                       </Grid>
                     </Grid>
                   </ListItem>

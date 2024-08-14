@@ -18,6 +18,7 @@ interface Poll {
     link: string;
     coverId: number;
     options: Option[];
+    createdAt: string;
 }
 
 interface Option {

@@ -27,8 +27,6 @@ const Home: React.FC = (props) => {
                     }
                 }));
                 setCovers(poll_covers);
-                console.log(covers);
-
             } catch (error) {
                 console.error("Error fetching data", error);
             }
@@ -50,6 +48,7 @@ const Home: React.FC = (props) => {
     return (
         <>
             <form className='poll-form'>
+                {/* <p className='main-title'>{t('allPollMessage')}</p> */}
                 <div className='poll-list'>
                     {polls.map(poll => (
                         <div className='main-poll-button'>
@@ -68,17 +67,18 @@ const Home: React.FC = (props) => {
                                         `url(${covers.find(cover => cover.id === poll.id)?.cover})` :
                                         '#3f51b5',
                                     backgroundSize: 'cover',
+                                    borderRadius: '5px 5px 0 0',
                                 }}>
-                                <Box sx={{
-                                        backgroundColor: 'rgb(250, 250, 249, 0.3)',
-                                        width: '100%',
-                                        textAlign: 'center',
-                                        borderRadius: '5px',
-                                    }}>
-                                    {poll.title}<br />
-                                    {poll.description}
-                                </Box>
                             </Button>
+                            <Box sx={{
+                                backgroundColor: 'white',
+                                width: '100%',
+                                textAlign: 'center',
+                                borderRadius: '0 0 5px 5px',
+                                height: '80px',
+                            }}>
+                                <p className='subtitle-1'>{poll.title}</p>
+                            </Box>
                         </div>
                     )
                     )}

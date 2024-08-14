@@ -9,11 +9,12 @@ import { I18nextProvider } from 'react-i18next';
 import i18n from 'i18next';
 
 i18n.init({
-  interpolation: { escapeValue: false }, 
-  lng: 'rus',                        
+  interpolation: { escapeValue: false },
+  lng: 'rus',
   resources: {
     eng: {
       translation: {
+        'lng': 'ENG',
         'welcomeMessage': 'Welcome to my app!',
         'logoMessage': 'Servey Gallery',
         'loginMessage': 'Login',
@@ -36,9 +37,12 @@ i18n.init({
         'deleteMessage': 'Delete',
         'activeMessage': 'Active',
         'closedMessage': 'Closed',
+        'creatingMessage': 'Creating a poll',
+        'creatingOptionsMessage': 'Creating options',
+        'addingCoverMessage': 'Adding a cover',
         'resultMessage': 'Result',
         'backMessage': 'Back',
-        'winnerMessage': ' is in the lead',
+        'winnerMessage': 'Leaders: ',
         'votesMessage': ' votes',
         'cannotVoteMessage': 'You have already voted',
         'nextMessage': 'Next',
@@ -47,10 +51,12 @@ i18n.init({
         'searchMessage': 'Search',
         'previewImageMessage': 'Preview cover',
         'currentImageMessage': 'Current cover',
+        'addPollWarningMessage': 'During the creation of the survey, you will not be able to return to the previous step. Further changes can be made on the "Poll Editor" tab',
       }
     },
     rus: {
       translation: {
+        'lng': 'РУС',
         'welcomeMessage': 'Добро пожаловать в мое приложение!',
         'logoMessage': 'Галерея опросов',
         'loginMessage': 'Войти',
@@ -73,9 +79,12 @@ i18n.init({
         'deleteMessage': 'Удалить',
         'activeMessage': 'Открыть опрос',
         'closedMessage': 'Закрыть опрос',
+        'creatingMessage': 'Создание опроса',
+        'creatingOptionsMessage': 'Создание вариантов ответов',
+        'addingCoverMessage': 'Добавление обложки',
         'resultMessage': 'Результат',
         'backMessage': 'Назад',
-        'winnerMessage': ' лидирует',
+        'winnerMessage': 'Лидеры: ',
         'votesMessage': ' голос(-ов)',
         'cannotVoteMessage': 'Вы уже проголосовали',
         'nextMessage': 'Далее',
@@ -84,6 +93,7 @@ i18n.init({
         'searchMessage': 'Поиск',
         'previewImageMessage': 'Превью обложки',
         'currentImageMessage': 'Текущая обложка',
+        'addPollWarningMessage': 'Во время создания опроса вы не сможете вернуться на предыдущий шаг. После создания изменения можно внести на вкладке "Редактор опросов".',
       }
     }
   }

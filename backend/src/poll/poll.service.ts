@@ -192,15 +192,18 @@ export class PollService {
                     options: true
                 }
             });
-            for(let option1 of poll.options) {
-                for(let option2 of poll.options) {
-                    if(option1.id !== option2.id) {
-                        if(option1.votesCount < option2.votesCount) {
-                            return option2;
-                        }
-                    }
+
+            let maxVotes = 0;
+            let winners = [];
+            for (let option of poll.options) {
+                if (option.votesCount > maxVotes) {
+                    maxVotes = option.votesCount;
+                    winners = [option];
+                } else if (option.votesCount === maxVotes) {
+                    winners.push(option);
                 }
             }
+            return winners;
         } catch (error) {
             console.log('Error when fetching the survey:', error);
         }

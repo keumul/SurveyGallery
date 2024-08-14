@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import AddToPhotosRoundedIcon from '@mui/icons-material/AddToPhotosRounded';
 import AutoFixHighRoundedIcon from '@mui/icons-material/AutoFixHighRounded';
@@ -19,12 +19,16 @@ import LanguageSelector from '../localization/languageSelector';
 const Header: React.FC = () => {
     const { t } = useTranslation();
     const client = axiosClient();
+    const navigate = useNavigate();
     const [openDrawer, setOpenDrawer] = React.useState(false);
     const [user, setUser] = React.useState<User>();
     const [isRegistered, setIsRegistered] = React.useState(false);
 
+    const handleNavigation = () => {
+        navigate('/home');
+    };
+
     useEffect(() => {
-        // register or not 
         getUser();
     })
 
@@ -46,24 +50,22 @@ const Header: React.FC = () => {
     const DrawerList = (
         <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
             <Box>
-                <Typography variant="h6" sx={{ textAlign: 'center', margin: '20px 0 0 0' }}>Hello,
-                    <span className='main-span'>{user?.FIO}</span>!</Typography>
+                <p className="main-title">Hello, <span className='main-span'>{user?.FIO}</span>!</p>
             </Box>
             <List>
-                {[t('addPollMessage'), t('editPollMessage'), t('allPollMessage')].map((text, index) => (
+                {[t('allPollMessage'), t('addPollMessage'), t('editPollMessage')].map((text, index) => (
                     <ListItem key={text} disablePadding>
-                        {index === 0 ? <ListItemButton component={Link} to="/creator">
-                            <AddToPhotosRoundedIcon />
-                            <ListItemText primary={text} sx={{ margin: '0 0 0 30px' }} />
-                        </ListItemButton> :
-                            index === 1 ? <ListItemButton component={Link} to="/editor">
+                        {index === 0 ?
+                            <ListItemButton component={Link} to="/home">
+                                <BallotRoundedIcon />
+                                <ListItemText primary={text} sx={{ margin: '0 0 0 30px' }} />
+                            </ListItemButton> : index === 1 ? <ListItemButton component={Link} to="/creator">
+                                <AddToPhotosRoundedIcon />
+                                <ListItemText primary={text} sx={{ margin: '0 0 0 30px' }} />
+                            </ListItemButton> : <ListItemButton component={Link} to="/editor">
                                 <AutoFixHighRoundedIcon />
                                 <ListItemText primary={text} sx={{ margin: '0 0 0 30px' }} />
-                            </ListItemButton> :
-                                <ListItemButton component={Link} to="/home">
-                                    <BallotRoundedIcon />
-                                    <ListItemText primary={text} sx={{ margin: '0 0 0 30px' }} />
-                                </ListItemButton>}
+                            </ListItemButton>}
                     </ListItem>
                 ))}
             </List>
@@ -85,7 +87,8 @@ const Header: React.FC = () => {
 
     return (
         <AppBar position="static"
-            sx={{ background: 'linear-gradient(10deg, #06B6D4, #3B82F6, #8B5CF6)' }}>
+            sx={{ background: '#488eff' }}
+        >
             <Toolbar>
                 <IconButton onClick={toggleDrawer(true)}
                     edge="start"
@@ -96,27 +99,21 @@ const Header: React.FC = () => {
                 <Drawer open={openDrawer} onClose={toggleDrawer(false)}>
                     {DrawerList}
                 </Drawer>
-
-                <Typography variant="h6"
-                    sx={{
-                        flexGrow: 1,
-                        textDecoration: 'none',
-                        color: 'white',
-                    }} component={Link} to="/home"
-                >
-                    {t('logoMessage')}
-                </Typography>
-                <LanguageSelector />
-                <>
-                    {!isRegistered ?
-                        <>
-                            <Button color="inherit" component={Link} to="/login">{t('loginMessage')}</Button>
-                            <Button color="inherit" component={Link} to="/register">{t('registerMessage')}</Button>
-                        </> : <></>
-                    }
-                </>
+                <div className='header-container'>
+                    <p className='logo-title'
+                        onClick={handleNavigation}>{t('logoMessage')}</p>
+                    <div><LanguageSelector /></div>
+                    <>
+                        {!isRegistered ?
+                            <>
+                                <Button color="inherit" component={Link} to="/login">{t('loginMessage')}</Button>
+                                <Button color="inherit" component={Link} to="/register">{t('registerMessage')}</Button>
+                            </> : <></>
+                        }
+                    </>
+                </div>
             </Toolbar>
-        </AppBar>
+        </AppBar >
     );
 }
 

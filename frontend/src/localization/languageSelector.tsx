@@ -1,21 +1,26 @@
+import { Button } from '@mui/material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 const LanguageSelector: React.FC = () => {
   const { i18n } = useTranslation();
+  const { t } = useTranslation();
 
-  const changeLanguage = (lng: any) => {
-    i18n.changeLanguage(lng);
+  const changeLanguage = () => {
+    i18n.changeLanguage(i18n.language === 'eng' ? 'rus' : 'eng');
   };
 
   return (
-
-    <div className="switch">
-      <input id="language-toggle" className="check-toggle check-toggle-round-flat" type="checkbox" />
-      <label htmlFor="language-toggle"></label>
-      <span className="on" onClick={() => changeLanguage('rus')}>РУС</span>
-      <span className="off" onClick={() => changeLanguage('eng')}>ENG</span>
-    </div>
+    <>
+      <Button
+        sx={{
+          color: 'white',
+          borderRadius: '5px',
+          fontWeight: '800',
+          fontSize: '13px'
+        }}
+        onClick={() => changeLanguage()}>{t('lng')}</Button>
+    </>
   )
 }
 

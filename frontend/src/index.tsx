@@ -15,6 +15,7 @@ i18n.init({
     eng: {
       translation: {
         'lng': 'ENG',
+        'helloMessage': 'Hello',
         'welcomeMessage': 'Welcome to my app!',
         'logoMessage': 'Servey Gallery',
         'loginMessage': 'Login',
@@ -52,11 +53,13 @@ i18n.init({
         'previewImageMessage': 'Preview cover',
         'currentImageMessage': 'Current cover',
         'addPollWarningMessage': 'During the creation of the survey, you will not be able to return to the previous step. Further changes can be made on the "Poll Editor" tab',
+        'editorInfoMessage': 'You can edit or delete the selected poll',
       }
     },
     rus: {
       translation: {
         'lng': 'РУС',
+        'helloMessage': 'Привет',
         'welcomeMessage': 'Добро пожаловать в мое приложение!',
         'logoMessage': 'Галерея опросов',
         'loginMessage': 'Войти',
@@ -94,6 +97,7 @@ i18n.init({
         'previewImageMessage': 'Превью обложки',
         'currentImageMessage': 'Текущая обложка',
         'addPollWarningMessage': 'Во время создания опроса вы не сможете вернуться на предыдущий шаг. После создания изменения можно внести на вкладке "Редактор опросов".',
+        'editorInfoMessage': 'Вы можете изменить или удалить выбранный опрос',
       }
     }
   }

@@ -6,7 +6,7 @@ const Control: React.FC = () => {
     const { t } = useTranslation();
     return (
         <Link to='/home' style={{ textDecoration: 'none' }}>
-            <p style={{ color: '#27272A', fontSize: '15px', margin: 0 }}>
+            <p className='subtitle-3'>
             ⯇ {t('backMessage')}
             </p>
         </Link>

@@ -14,6 +14,7 @@ import { Option, Poll } from "../interfaces/interfaces";
 import axiosClient from "../services/axiosInstance";
 import NavigateNextOutlinedIcon from '@mui/icons-material/NavigateNextOutlined';
 import { Alert } from "@mui/material";
+import DoneRoundedIcon from '@mui/icons-material/DoneRounded';
 
 const Creator: React.FC = () => {
     const client = axiosClient();
@@ -147,7 +148,6 @@ const Creator: React.FC = () => {
                                     required
                                     id="title"
                                     name="title"
-                                    label={t("titleMessage")}
                                     value={poll?.title}
                                     fullWidth
                                     size="small"
@@ -164,7 +164,6 @@ const Creator: React.FC = () => {
                             <Grid item xs={12} sm={10}>
                                 <TextField
                                     id="description"
-                                    label={t("descriptionMessage")}
                                     value={poll?.description}
                                     multiline
                                     fullWidth
@@ -182,7 +181,6 @@ const Creator: React.FC = () => {
                                     required
                                     id="url"
                                     name="url"
-                                    label="URL"
                                     value={poll?.link}
                                     fullWidth
                                     size="small"
@@ -198,12 +196,10 @@ const Creator: React.FC = () => {
                             </Grid>
                             <Grid item xs={12} sm={4}>
                                 <FormControl fullWidth size="small">
-                                    <InputLabel id="status-label">{t('statusMessage')}</InputLabel>
                                     <Select
                                         labelId="status"
                                         id="status"
                                         value={poll?.status}
-                                        label={t("statusMessage")}
                                         onChange={(e) => handleChangePoll(e, 'status')}>
                                         {status.map((item) => (
                                             <MenuItem value={item}>{item}</MenuItem>
@@ -241,7 +237,6 @@ const Creator: React.FC = () => {
                                     required
                                     id="title_option"
                                     name="title_option"
-                                    label={t("titleMessage")}
                                     value={option?.title}
                                     fullWidth
                                     size="small"
@@ -258,7 +253,6 @@ const Creator: React.FC = () => {
                             <Grid item xs={12} sm={10}>
                                 <TextField
                                     id="description_option"
-                                    label={t("descriptionMessage")}
                                     value={option?.description}
                                     multiline
                                     fullWidth
@@ -303,6 +297,7 @@ const Creator: React.FC = () => {
                             </InputLabel>
                         </Grid>
                         <Grid item xs={12} sm={4}>
+                        {previewSrc && <img src={previewSrc} alt="Preview" className="big-cover" />}
                             <Button>
                                 <input
                                     type="file"
@@ -310,9 +305,8 @@ const Creator: React.FC = () => {
                                     onChange={(e) => handleChooseCover(e)}
                                 />
                             </Button>
-                            {previewSrc && <img src={previewSrc} alt="Preview" width="200" />}
                             <Button variant="contained" className="main-button" type="submit" name="submit-cover">
-                                {t('submitMessage')}
+                                <DoneRoundedIcon />
                             </Button>
                         </Grid>
                     </>

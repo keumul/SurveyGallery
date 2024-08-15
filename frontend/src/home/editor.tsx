@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosClient from "../services/axiosInstance";
 import { Poll, Option } from "../interfaces/interfaces";
-import { Button, Collapse, Grid, InputLabel, List, ListItem, ListItemButton, ListItemText, TextField, Typography } from "@mui/material";
+import { Alert, Button, Collapse, Divider, Grid, InputLabel, List, ListItem, ListItemButton, ListItemText, TextField, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
@@ -159,8 +159,14 @@ const Editor = () => {
   }
 
   const searchPoll = (searchText: string) => {
-    polls.find(poll => poll.title === searchText); 
-    setPolls(polls.filter(poll => poll.title === searchText));
+    setPolls(polls.filter(poll => poll.title.toLowerCase().includes(searchText.toLowerCase())));
+    if (searchText === '') {
+      client.get('/poll').then((response) => {
+        setPolls(response.data);
+      }).catch((error) => {
+        console.error("Error fetching polls:", error);
+      });
+    }
   }
 
   const handleSubmit = (e: any) => {
@@ -243,21 +249,36 @@ const Editor = () => {
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        <div className="search">
-          <input type="search" name="search-text" 
-            placeholder={t('searchMessage')}
-            onChange={(e) => handleSearch(e.target.value)}
-            pattern=".*\S.*" required/>
-          <Button className="search-button" type="submit" variant="contained">
-            <SearchRoundedIcon />
-          </Button>
-        </div>
-        <Button type="submit" name="update-button" variant="contained" className="main-button">{t('updateMessage')}</Button>
-        <Button type="submit" name="delete-button" variant="contained" className="main-button">{t('deleteMessage')}</Button>
-
-        <List subheader={
-          <h3 className="subtitle-1">{t('allPollMessage')}</h3>
-        }>
+        <List subheader={<p className="subtitle-1">{t('allPollMessage')}</p>}>
+          <div className="header-container">
+            <div>
+              <Button type="submit" name="update-button" disabled={selectedPollId ? false : true}
+                variant="contained" className="main-button">
+                <PublishedWithChangesRoundedIcon />
+              </Button>
+              <Button type="submit" name="delete-button" variant="contained"
+                disabled={selectedPollId ? false : true}
+                className="main-button">
+                <DeleteForeverRoundedIcon />
+              </Button>
+              {selectedPollId ?
+                <Alert severity="info">{t('editorInfoMessage')}</Alert> : <></>
+              }
+            </div>
+            <div className="search">
+              <input type="search"
+                name="search-text"
+                placeholder={t('searchMessage')}
+                value={searchText}
+                onChange={(e) => handleSearch(e.target.value)}
+                pattern=".*\S.*"
+                className="search-text"
+              />
+              <button name="search-button" type="submit" className="search-button">
+                <SearchRoundedIcon />
+              </button>
+            </div>
+          </div>
           {polls.map((poll) => (
             <>
               <ListItemButton key={poll.id}
@@ -339,8 +360,8 @@ const Editor = () => {
                           />
                         </Button>
                       </Grid>
-
                       <Grid>
+                        <Divider variant="middle" sx={{ 'margin': '10px' }} />
                         <Typography sx={{ margin: '0px 17px' }}>{t('optionsTitleMessage')}</Typography>
                         <List>
                           {options.filter(option => option.pollId === poll.id).map((option) => (
@@ -378,39 +399,40 @@ const Editor = () => {
                         </List>
                         <Grid sx={{ marginLeft: '17px' }}>
                           <Typography sx={{ marginBottom: '10px' }}>{t('addOptionMessage')}</Typography>
-                            <Grid container spacing={2}>
-                              <Grid item xs={4}>
-                                <TextField
-                                  id="title_option"
-                                  name="title_option"
-                                  label={t("titleMessage")}
-                                  value={option?.title}
-                                  className="table-input"
-                                  autoComplete="off"
-                                  variant="outlined"
-                                  onChange={(e) => handleChangeOption(e, 'title')}
-                                />
-                              </Grid>
-                              <Grid item xs={6}>
-                                <TextField
-                                  id="description_option"
-                                  label={t("descriptionMessage")}
-                                  value={option?.description}
-                                  className="table-input"
-                                  multiline
-                                  onChange={(e) => handleChangeOption(e, 'description')}
-                                />
-                              </Grid>
-                              <Grid item xs={2}>
-                                <Button variant="contained" className="main-button" type="submit" name="add-option-button">
-                                  <AddCircleRoundedIcon />
-                                </Button>
-                              </Grid>
+                          <Grid container spacing={2}>
+                            <Grid item xs={4}>
+                              <TextField
+                                id="title_option"
+                                name="title_option"
+                                label={t("titleMessage")}
+                                value={option?.title}
+                                className="table-input"
+                                autoComplete="off"
+                                variant="outlined"
+                                onChange={(e) => handleChangeOption(e, 'title')}
+                              />
                             </Grid>
+                            <Grid item xs={6}>
+                              <TextField
+                                id="description_option"
+                                label={t("descriptionMessage")}
+                                value={option?.description}
+                                className="table-input"
+                                multiline
+                                onChange={(e) => handleChangeOption(e, 'description')}
+                              />
+                            </Grid>
+                            <Grid item xs={2}>
+                              <Button variant="contained" className="main-button" type="submit" name="add-option-button">
+                                <AddCircleRoundedIcon />
+                              </Button>
+                            </Grid>
+                          </Grid>
                         </Grid>
                       </Grid>
                     </Grid>
                   </ListItem>
+                  <Divider variant="middle" sx={{ 'margin': '10px' }} />
                 </List>
               </Collapse >
             </>

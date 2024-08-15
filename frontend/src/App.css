@@ -28,11 +28,6 @@
   color: #1c4cad;
 }
 
-.main-span {
-  color: #39b1f7;
-  font-weight: 700;
-}
-
 .poll-card {
   max-width: 600px;
   margin: 20px auto;
@@ -65,6 +60,13 @@
   font-size: 15px;
   padding-bottom: 25px;
   margin: 0 auto;
+  color: #484848;
+}
+
+.subtitle-3 {
+  font-size: 15px;
+  font-weight: 400;
+  margin: 15px 0 0 15px;
   color: #484848;
 }
 
@@ -404,31 +406,30 @@ body::-webkit-scrollbar-thumb {
 }
 
 .search {
-  position: relative;
   display: flex;
+  justify-content: end;
   margin: 10px;
+}
+
+.search-text:focus{
+  color: #3b3b3b;
+  outline: none;
 }
 
 .search-text {
   width: 100%;
-  border: none;
-  padding: 5px;
-  height: 20px;
+  border: 1px solid #b4b4b4;
+  height: 35px;
+  padding: 0 10px;
   border-radius: 5px 0 0 5px;
-  outline: none;
-}
-
-.search-text:focus{
-  color: #00B4CC;
-  border: none;
   outline: none;
 }
 
 .search-button {
   border: none;
   width: 40px;
-  height: 36px;
-  background: linear-gradient(45deg, #488eff, #7C3AED);
+  height: 35px;
+  background: #488eff;
   text-align: center;
   color: #fff;
   border-radius: 0 5px 5px 0;

@@ -5,9 +5,7 @@ import { Poll, Option } from '../interfaces/interfaces';
 import { useParams } from 'react-router-dom';
 import Control from '../header/control';
 import { useTranslation } from 'react-i18next';
-import { ExpandMore } from '@mui/icons-material';
-import { red } from '@mui/material/colors';
-import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
+import PollRoundedIcon from '@mui/icons-material/PollRounded';
 import { format } from 'date-fns';
 
 const PollCard: React.FC = () => {
@@ -24,7 +22,16 @@ const PollCard: React.FC = () => {
     const [errorMessages, setErrorMessages] = useState<string[]>([]);
 
     const formatDate = (date: any) => {
-        return format(new Date(date), 'MMMM dd, yyyy HH:mm:ss');
+        try {
+            const parsedDate = new Date(date);
+            if (isNaN(parsedDate.getTime())) {
+                throw new Error('Invalid date');
+            }
+            return format(parsedDate, 'dd.MM.yyyy HH:mm:ss');
+        } catch (error) {
+            console.error('Invalid date provided:', date);
+            return 'Invalid date';
+        }
     };
 
     useEffect(() => {
@@ -104,10 +111,13 @@ const PollCard: React.FC = () => {
     return (
         <>
             <Card className="poll-card">
+            <Control />
                 <CardHeader
-                    avatar={<AccountCircleRoundedIcon sx={{ 'color': 'gray' }} />}
+                    avatar={<PollRoundedIcon sx={{ 'color': '#A3A3A3', 'fontSize':'30px' }} />}
                     title={<p className="card-title-1">{poll?.title}</p>}
-                    subheader={<p className="card-title-2">{poll?.createdAt}</p>}
+                    subheader={<p className="card-title-2">
+                        {formatDate(poll?.createdAt)}</p>
+                        }
                 />
                 <CardMedia
                     component="img"

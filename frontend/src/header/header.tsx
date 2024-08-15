@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -44,13 +43,20 @@ const Header: React.FC = () => {
     }
 
     const toggleDrawer = (newOpen: boolean) => () => {
+        client.get('/users/me').then((response) => {
+            if (response.data) {
+                setUser(response.data);
+            }
+        }).catch((error) => {
+            console.error("Error fetching user:", error);
+        });
         setOpenDrawer(newOpen);
     };
 
     const DrawerList = (
         <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
             <Box>
-                <p className="main-title">Hello, <span className='main-span'>{user?.FIO}</span>!</p>
+                <p className="main-title">{t('helloMessage')}, {user?.FIO}!</p>
             </Box>
             <List>
                 {[t('allPollMessage'), t('addPollMessage'), t('editPollMessage')].map((text, index) => (

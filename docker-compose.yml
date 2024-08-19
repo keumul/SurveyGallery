@@ -1,0 +1,34 @@
+version: "4.24.1"
+services:
+  survey-gallery-db:
+    container_name: survey-gallery-db
+    image: postgres:latest
+    ports:
+      - 5434:5432
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: meow
+      POSTGRES_DB: nest
+    networks:
+      - mynetwork
+
+  survey-gallery-backend:
+    container_name: survey-gallery-backend
+    image: survey-gallery-backend:latest
+    ports:
+      - 5000:5000
+    environment:
+      DATABASE_URL: postgresql://root:meow@survey-gallery-db:5432/nest?schema=public
+    networks:
+      - mynetwork
+
+  survey-gallery-frontend:
+    container_name: survey-gallery-frontend
+    image: survey-gallery-frontend:latest
+    ports:
+      - 80:80
+    networks:
+      - mynetwork
+networks:
+  mynetwork:
+    name: mynetwork

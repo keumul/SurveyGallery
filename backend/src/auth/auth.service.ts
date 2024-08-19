@@ -106,4 +106,9 @@ export class AuthService {
         });
         return { access_token: token };
     }
+
+    async logout() {
+        this.token = null; 
+        return { message: 'Logged out' };
+    }
 }

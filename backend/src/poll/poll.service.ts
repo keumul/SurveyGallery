@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PollDto } from './dto/poll.dto';
 import { OptionDto } from './dto/option.dto';
-import { VoteDto } from './dto/vote.dto';
 
 @Injectable()
 export class PollService {
@@ -83,18 +82,17 @@ export class PollService {
             });
 
             for (let option of options) {
-                const alreadyVote = await this.prisma.vote.findFirst({
+                var alreadyVote = await this.prisma.vote.findMany({
                     where: {
                         userId: +user.id,
                         optionId: +option.id
                     }
                 });
-
-                if (alreadyVote) {
-                    return true;
-                } 
-                return false;
             }
+            if (alreadyVote.length !== 0) {
+                return true;
+            } 
+            return false;
             
         } catch (error) {
             console.log('Error when checking if the user has already voted:', error);

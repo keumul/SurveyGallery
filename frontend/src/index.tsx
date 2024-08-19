@@ -21,7 +21,8 @@ i18n.init({
         'loginMessage': 'Login',
         'registerMessage': 'Register',
         'logoutMessage': 'Logout',
-        'nameMessage': 'FIO',
+        'submitMessage': 'Submit',
+        'nameMessage': 'Full name',
         'emailMessage': 'Email',
         'passwordMessage': 'Password',
         'codeMessage': 'Activation code',
@@ -54,6 +55,10 @@ i18n.init({
         'currentImageMessage': 'Current cover',
         'addPollWarningMessage': 'During the creation of the survey, you will not be able to return to the previous step. Further changes can be made on the "Poll Editor" tab',
         'editorInfoMessage': 'You can edit or delete the selected poll',
+        'invalidCodeMessage': 'Invalid activation code',
+        'invalidUserMessage': 'Email is already being used by other user',
+        'invalidEmailMessage': 'Invalid email',
+        'fieldsMessage': 'All fields are required'
       }
     },
     rus: {
@@ -65,6 +70,7 @@ i18n.init({
         'loginMessage': 'Войти',
         'registerMessage': 'Зарегистрироваться',
         'logoutMessage': 'Выйти',
+        'submitMessage': 'Отправить',
         'nameMessage': 'ФИО',
         'emailMessage': 'Почта',
         'passwordMessage': 'Пароль',
@@ -98,6 +104,10 @@ i18n.init({
         'currentImageMessage': 'Текущая обложка',
         'addPollWarningMessage': 'Во время создания опроса вы не сможете вернуться на предыдущий шаг. После создания изменения можно внести на вкладке "Редактор опросов".',
         'editorInfoMessage': 'Вы можете изменить или удалить выбранный опрос',
+        'invalidCodeMessage': 'Неверный код активации',
+        'invalidUserMessage': 'Почта уже используется другим пользователем',
+        'invalidEmailMessage': 'Неверная почта',
+        'fieldsMessage': 'Все поля обязательны для заполнения'
       }
     }
   }

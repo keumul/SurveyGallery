@@ -9,7 +9,7 @@ const axiosClient = (token: string | null = null): AxiosInstance => {
     };
 
     const client = axios.create({
-        baseURL: 'http://localhost:5000/api',
+        baseURL: process.env.REACT_APP_API_HOST + '/api',
         headers,
         timeout: 60000,
         withCredentials: false,

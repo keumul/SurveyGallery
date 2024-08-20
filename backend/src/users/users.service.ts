@@ -72,4 +72,5 @@ export class UsersService {
       console.error('Error when deleting a user: ', error);
     }
   }
+
 }

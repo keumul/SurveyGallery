@@ -49,7 +49,7 @@ const Header: React.FC = () => {
                 setIsRegistered(false);
             }
         }).catch((error) => {
-            console.error("Error fetching user:", error);
+            console.error('Error fetching user:', error);
         }
         );
     }
@@ -60,27 +60,27 @@ const Header: React.FC = () => {
                 setUser(response.data);
             }
         }).catch((error) => {
-            console.error("Error fetching user:", error);
+            console.error('Error fetching user:', error);
         });
         setOpenDrawer(newOpen);
     };
 
     const DrawerList = (
-        <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
+        <Box sx={{ width: 250 }} role='presentation' onClick={toggleDrawer(false)}>
             <Box>
-                <p className="main-title">{t('helloMessage')}, {user?.FIO}!</p>
+                <p className='main-title'>{t('helloMessage')}, {user?.FIO}!</p>
             </Box>
             <List>
                 {[t('allPollMessage'), t('addPollMessage'), t('editPollMessage')].map((text, index) => (
                     <ListItem key={text} disablePadding>
                         {index === 0 ?
-                            <ListItemButton component={Link} to="/home">
+                            <ListItemButton component={Link} to='/home'>
                                 <BallotRoundedIcon />
                                 <ListItemText primary={text} sx={{ margin: '0 0 0 30px' }} />
-                            </ListItemButton> : index === 1 ? <ListItemButton component={Link} to="/creator">
+                            </ListItemButton> : index === 1 ? <ListItemButton component={Link} to='/creator'>
                                 <AddToPhotosRoundedIcon />
                                 <ListItemText primary={text} sx={{ margin: '0 0 0 30px' }} />
-                            </ListItemButton> : <ListItemButton component={Link} to="/editor">
+                            </ListItemButton> : <ListItemButton component={Link} to='/editor'>
                                 <AutoFixHighRoundedIcon />
                                 <ListItemText primary={text} sx={{ margin: '0 0 0 30px' }} />
                             </ListItemButton>}
@@ -104,15 +104,15 @@ const Header: React.FC = () => {
     );
 
     return (
-        <AppBar position="static"
+        <AppBar position='static'
             sx={{ background: '#488eff' }}
         >
             <Toolbar>
                 {isRegistered && isAdmin ?
                     <><IconButton onClick={toggleDrawer(true)}
-                        edge="start"
-                        color="inherit"
-                        aria-label="menu"
+                        edge='start'
+                        color='inherit'
+                        aria-label='menu'
                         sx={{ mr: 2 }}
                     ><MenuIcon /></IconButton>
                         <Drawer open={openDrawer} onClose={toggleDrawer(false)}>
@@ -126,11 +126,11 @@ const Header: React.FC = () => {
                     <div><LanguageSelector />
                         {!isRegistered ?
                             <>
-                                <Button color="inherit" component={Link} to="/login">{t('loginMessage')}</Button>
-                                <Button color="inherit" component={Link} to="/register">{t('registerMessage')}</Button>
+                                <Button color='inherit' component={Link} to='/login'>{t('loginMessage')}</Button>
+                                <Button color='inherit' component={Link} to='/register'>{t('registerMessage')}</Button>
                             </> : isRegistered && !isAdmin ? 
                             <>
-                            <Button onClick={logout} color="inherit" >
+                            <Button onClick={logout} color='inherit' >
                                 <LogoutRoundedIcon />
                             </Button>
                             </>

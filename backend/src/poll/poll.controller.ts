@@ -3,7 +3,7 @@ import { PollService } from './poll.service';
 import { PollDto } from './dto/poll.dto';
 import { OptionDto } from './dto/option.dto';
 import { User } from '@prisma/client';
-import { GetUser } from "src/auth/decorator";
+import { GetUser } from 'src/auth/decorator';
 import { JwtGuard } from 'src/auth/guard/jwt.guard';
 import { AdminGuard, UserGuard } from 'src/auth/guard';
 

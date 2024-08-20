@@ -65,7 +65,7 @@ const PollCard: React.FC = () => {
                     })
             })
             .catch((error) => {
-                console.error("Error fetching polls:", error);
+                console.error('Error fetching polls:', error);
             });
     }, []);
 
@@ -83,7 +83,7 @@ const PollCard: React.FC = () => {
                 setMaxVotes(response.data[0].votesCount);
             })
             .catch((error) => {
-                console.error("Error fetching winner:", error);
+                console.error('Error fetching winner:', error);
             });
     }
 
@@ -116,23 +116,23 @@ const PollCard: React.FC = () => {
 
     return (
         <>
-            <Card className="poll-card">
+            <Card className='poll-card'>
                 <Control />
                 <CardHeader
                     avatar={<PollRoundedIcon sx={{ 'color': '#A3A3A3', 'fontSize': '30px' }} />}
-                    title={<p className="card-title-1">{poll?.title}</p>}
-                    subheader={<p className="card-title-2">
+                    title={<p className='card-title-1'>{poll?.title}</p>}
+                    subheader={<p className='card-title-2'>
                         {formatDate(poll?.createdAt)}</p>
                     }
                 />
                 <CardMedia
-                    component="img"
-                    height="194"
+                    component='img'
+                    height='194'
                     image={cover}
-                    alt="Poll cover not found"
+                    alt='Poll cover not found'
                 />
                 <CardContent>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant='body2' color='text.secondary'>
                         {poll?.description}
                     </Typography>
                     {answerIsOpen ? (
@@ -149,7 +149,7 @@ const PollCard: React.FC = () => {
                 </CardContent>
                 <CardContent>
                     <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
-                        <FormControl component="fieldset" disabled={answerIsOpen}
+                        <FormControl component='fieldset' disabled={answerIsOpen}
                             sx={{
                                 display: 'flex',
                                 flexDirection: 'column',
@@ -192,7 +192,7 @@ const PollCard: React.FC = () => {
                                                         />
                                                     </Box>
                                                 </Box>
-                                                <Typography variant="caption">
+                                                <Typography variant='caption'>
                                                     {option.votesCount}{t('votesMessage')}
                                                 </Typography>
                                             </div>
@@ -202,12 +202,12 @@ const PollCard: React.FC = () => {
                                 ))}
                             </RadioGroup>
                             {answerIsOpen ? (
-                                <Alert severity="info">{t('cannotVoteMessage')}</Alert>
+                                <Alert severity='info'>{t('cannotVoteMessage')}</Alert>
                             ) : <></>}
                         </FormControl>
                         <Button sx={{ align: 'center' }}
-                            type="submit"
-                            variant="outlined"
+                            type='submit'
+                            variant='outlined'
                             disabled={selectedOptions === null || answerIsOpen}>{t('resultMessage')}</Button>
                     </form>
                 </CardContent>

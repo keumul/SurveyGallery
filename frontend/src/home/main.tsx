@@ -30,7 +30,7 @@ const Home: React.FC = (props) => {
                 }));
                 setCovers(poll_covers);
             } catch (error) {
-                console.error("Error fetching data", error);
+                console.error('Error fetching data', error);
             }
         };
 
@@ -57,7 +57,7 @@ const Home: React.FC = (props) => {
             client.get('/poll').then((response) => {
                 setPolls(response.data);
             }).catch((error) => {
-                console.error("Error fetching polls:", error);
+                console.error('Error fetching polls:', error);
             });
         }
     }
@@ -71,15 +71,15 @@ const Home: React.FC = (props) => {
     return (
         <>
             <form className='poll-form' onSubmit={handleSubmit}>
-                    <div className="search">
-                        <input type="search"
-                            name="search-text"
+                    <div className='search'>
+                        <input type='search'
+                            name='search-text'
                             placeholder={t('searchMessage')}
                             value={searchText}
                             onChange={(e) => setSearchText(e.target.value)}
-                            pattern=".*\S.*"
-                            className="search-text"/>
-                        <button type="submit" className="search-button">
+                            pattern='.*\S.*'
+                            className='search-text'/>
+                        <button type='submit' className='search-button'>
                             <SearchRoundedIcon />
                         </button>
                     </div>

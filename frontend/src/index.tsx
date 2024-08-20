@@ -58,7 +58,10 @@ i18n.init({
         'invalidCodeMessage': 'Invalid activation code',
         'invalidUserMessage': 'Email is already being used by other user',
         'invalidEmailMessage': 'Invalid email',
-        'fieldsMessage': 'All fields are required'
+        'fieldsMessage': 'All fields are required',
+        'successUpdateMessage': 'Successfully updated',
+        'successDeleteMessage': 'Successfully deleted',
+        'successCreateMessage': 'Successfully created',
       }
     },
     rus: {
@@ -107,7 +110,10 @@ i18n.init({
         'invalidCodeMessage': 'Неверный код активации',
         'invalidUserMessage': 'Почта уже используется другим пользователем',
         'invalidEmailMessage': 'Неверная почта',
-        'fieldsMessage': 'Все поля обязательны для заполнения'
+        'fieldsMessage': 'Все поля обязательны для заполнения', 
+        'successUpdateMessage': 'Успешно обновлено',
+        'successDeleteMessage': 'Успешно удалено',
+        'successCreateMessage': 'Успешно создано',
       }
     }
   }

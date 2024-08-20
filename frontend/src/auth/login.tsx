@@ -1,6 +1,6 @@
-import { Container, CssBaseline, Box, TextField, Button } from "@mui/material";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Container, CssBaseline, Box, TextField, Button } from '@mui/material';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axiosClient from '../services/axiosInstance';
 import { useTranslation } from 'react-i18next';
 
@@ -9,9 +9,9 @@ const Login: React.FC = () => {
     const navigate = useNavigate();
     const client = axiosClient();
     const [info, setInfo] = useState({
-        email: "",
-        password: "",
-        activationCode: "",
+        email: '',
+        password: '',
+        activationCode: '',
     });
     
     const handleChange = (e: any) => {
@@ -29,11 +29,11 @@ const Login: React.FC = () => {
             password: info.password,
             activationCode: info.activationCode
         };
-        client.post("/auth/login", userData).then((response) => {
+        client.post('/auth/login', userData).then((response) => {
             localStorage.setItem('ACCESS_TOKEN', response.data.access_token);
             navigate('/home');
         }).catch((error) => {
-            console.error("Error logging in:", error);
+            console.error('Error logging in:', error);
         });
     };
 
@@ -57,43 +57,31 @@ const Login: React.FC = () => {
                     <Box sx={{ mt: 1 }}>
                         <TextField
                             required
-                            margin="dense"
+                            margin='dense'
                             fullWidth
-                            id="email"
+                            id='email'
                             label={t('emailMessage')}
-                            name="email"
+                            name='email'
                             autoFocus
                             value={info.email}
                             onChange={handleChange}
                         />
 
                         <TextField
-                            sx={{ borderColor: "#fffff" }}
-                            margin="dense"
+                            sx={{ borderColor: '#fffff' }}
+                            margin='dense'
                             required
                             fullWidth
-                            name="password"
+                            name='password'
                             label={t('passwordMessage')}
-                            type="password"
-                            id="password"
+                            type='password'
+                            id='password'
                             value={info.password}
                             onChange={handleChange}
                         />
-                        <TextField
-                            sx={{ borderColor: "#fffff" }}
-                            margin="dense"
-                            required
-                            fullWidth
-                            name="activationCode"
-                            label={t('codeMessage')}
-                            type="activationCode"
-                            id="activationCode"
-                            value={info.activationCode}
-                            onChange={handleChange}
-                        />
-                        <Button type="submit"
-                            variant="contained" className='auth-button' fullWidth>
-                            {t("loginMessage")}
+                        <Button type='submit'
+                            variant='contained' className='auth-button' fullWidth>
+                            {t('loginMessage')}
                         </Button>
                     </Box>
                 </Box>

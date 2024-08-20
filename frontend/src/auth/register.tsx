@@ -1,19 +1,20 @@
-import { Container, CssBaseline, Box, TextField, Button, Snackbar } from "@mui/material";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Container, CssBaseline, Box, TextField, Button, Snackbar, IconButton, Alert } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axiosClient from '../services/axiosInstance';
 import { useTranslation } from 'react-i18next';
+import React from 'react';
 
 const Register: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const client = axiosClient();
   const [info, setInfo] = useState({
-    FIO: "",
-    email: "",
-    password: "",
-    activationCode: "",
-    role: "user",
+    FIO: '',
+    email: '',
+    password: '',
+    activationCode: '',
+    role: 'user',
   });
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
@@ -44,11 +45,16 @@ const Register: React.FC = () => {
       password: info.password,
       role: info.role
     };
-    client.post("/auth/register", userData).then((response) => {
+
+    client.post('/auth/register', userData).then((response) => {
       setIsCode(true);
+      setOpen(false);
     }).catch((error) => {
-      setMessage(t('userExistsMessage'));
-      setOpen(true);
+      if (error.response.status === 400) {
+        setMessage(t('invalidUserMessage'));
+        setOpen(true);
+        setIsCode(false);
+      }
     });
   }
 
@@ -59,23 +65,21 @@ const Register: React.FC = () => {
       password: info.password,
       activationCode: info.activationCode
     };
-    client.post("/auth/login", userData).then((response) => {
+    client.post('/auth/login', userData).then((response) => {
       localStorage.setItem('ACCESS_TOKEN', response.data.access_token);
       navigate('/home');
     }).catch((error) => {
-      setMessage(t('invalidCodeMessage'));
-      setOpen(true);
+      if (error.response.status === 400) {
+        setMessage(t('invalidCodeMessage'));
+        setOpen(true);
+      }
     });
   }
+
 
   return (
     <>
       <form onSubmit={handleRegister}>
-        <Snackbar
-          open={open}
-          autoHideDuration={3000}
-          message={message}
-        />
         <Container maxWidth='xs'>
           <CssBaseline />
           <Box
@@ -93,11 +97,11 @@ const Register: React.FC = () => {
                 <>
                   <TextField
                     required
-                    margin="dense"
+                    margin='dense'
                     fullWidth
-                    id="FIO"
+                    id='FIO'
                     label={t('nameMessage')}
-                    name="FIO"
+                    name='FIO'
                     autoFocus
                     value={info.FIO}
                     onChange={handleChange}
@@ -105,48 +109,56 @@ const Register: React.FC = () => {
 
                   <TextField
                     required
-                    margin="dense"
+                    margin='dense'
                     fullWidth
-                    id="email"
+                    id='email'
                     label={t('emailMessage')}
-                    name="email"
+                    name='email'
                     autoFocus
                     value={info.email}
                     onChange={handleChange}
                   />
 
                   <TextField
-                    sx={{ borderColor: "#fffff" }}
-                    margin="dense"
+                    sx={{ borderColor: '#fffff' }}
+                    margin='dense'
                     required
                     fullWidth
-                    name="password"
+                    name='password'
                     label={t('passwordMessage')}
-                    type="password"
-                    id="password"
+                    type='password'
+                    id='password'
                     value={info.password}
                     onChange={handleChange}
                   />
-                  <Button type="submit" name="register"
-                    variant="contained" className='auth-button' fullWidth>
-                    {t("registerMessage")}
+                  {open ? <Alert
+                    severity='error'>
+                    {message}
+                  </Alert> : <></>}
+                  <Button type='submit' name='register'
+                    variant='contained' className='auth-button' fullWidth>
+                    {t('registerMessage')}
                   </Button>
                 </> :
                 <>
                   <TextField
-                    sx={{ borderColor: "#fffff" }}
-                    margin="dense"
+                    sx={{ borderColor: '#fffff' }}
+                    margin='dense'
                     required
                     fullWidth
-                    name="activationCode"
+                    name='activationCode'
                     label={t('codeMessage')}
-                    type="activationCode"
-                    id="activationCode"
+                    type='activationCode'
+                    id='activationCode'
                     value={info.activationCode}
                     onChange={handleChange}></TextField>
-                  <Button type="submit" name="code"
-                    variant="contained" className='auth-button' fullWidth>
-                    {t("submitMessage")}
+                    {open ? <Alert
+                    severity='error'>
+                    {message}
+                  </Alert> : <></>}
+                  <Button type='submit' name='code'
+                    variant='contained' className='auth-button' fullWidth>
+                    {t('submitMessage')}
                   </Button>
                 </>
               }</>

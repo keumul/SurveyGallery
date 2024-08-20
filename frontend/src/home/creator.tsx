@@ -1,40 +1,39 @@
-import * as React from "react";
-import Grid from "@mui/material/Grid";
-import TextField from "@mui/material/TextField";
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
+import * as React from 'react';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 import { useNavigate } from 'react-router-dom';
-import Button from "@mui/material/Button";
-import { useTranslation } from "react-i18next";
-import { Option, Poll } from "../interfaces/interfaces";
-import axiosClient from "../services/axiosInstance";
+import Button from '@mui/material/Button';
+import { useTranslation } from 'react-i18next';
+import { Option, Poll } from '../interfaces/interfaces';
+import axiosClient from '../services/axiosInstance';
 import NavigateNextOutlinedIcon from '@mui/icons-material/NavigateNextOutlined';
-import { Alert } from "@mui/material";
+import { Alert } from '@mui/material';
 import DoneRoundedIcon from '@mui/icons-material/DoneRounded';
 
 const Creator: React.FC = () => {
     const client = axiosClient();
-    const status = ["active", "closed"];
+    const status = ['active', 'closed'];
     const [poll, setPoll] = React.useState<Poll>({
         id: 0,
-        title: "",
-        description: "",
-        type: "poll",
-        link: "",
-        status: "active",
+        title: '',
+        description: '',
+        type: 'poll',
+        link: '',
+        status: 'active',
         coverId: 0,
         options: [],
-        createdAt: ""
+        createdAt: ''
     })
-
     const [option, setOption] = React.useState<Option>({
         id: 0,
-        title: "",
-        description: "",
+        title: '',
+        description: '',
         pollId: 0,
         votesCount: 0
     });
@@ -44,12 +43,13 @@ const Creator: React.FC = () => {
     const [pollId, setPollId] = React.useState(0);
     const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
     const [previewSrc, setPreviewSrc] = React.useState('');
+    const [setMessage, setSetMessage] = React.useState('');
+    const [open, setOpen] = React.useState(false);
     const navigation = useNavigate();
 
     const handleChooseCover = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files ? e.target.files[0] : null;
         setSelectedFile(file);
-
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -82,30 +82,30 @@ const Creator: React.FC = () => {
             client.get(`/poll/option/poll/${pollId}`).then((response) => {
                 setOptions(response.data);
             }).catch((error) => {
-                console.error("Error fetching options:", error);
+                console.error('Error fetching options:', error);
             });
         }).catch((error) => {
-            console.error("Error creating option:", error);
+            console.error('Error creating option:', error);
         });
     }
 
     const handleSubmit = (e: any) => {
         const buttonName = e.nativeEvent.submitter.name;
         e.preventDefault();
-        if (buttonName === "submit-poll") {
+        if (buttonName === 'submit-poll') {
             if (poll) {
-                client.post("/poll", poll).then((response) => {
+                client.post('/poll', poll).then((response) => {
                     setPollId(response.data.id);
                     setStep(2);
                 }).catch((error) => {
-                    console.error("Error creating poll:", error);
+                    console.error('Error creating poll:', error);
                 });
             }
-        } else if (buttonName === "add-option") {
+        } else if (buttonName === 'add-option') {
             addOption();
-        } else if (buttonName === "next-step") {
+        } else if (buttonName === 'next-step') {
             setStep(3);
-        } else if (buttonName === "submit-cover") {
+        } else if (buttonName === 'submit-cover') {
             if (!selectedFile) {
                 console.error('No file selected');
                 return;
@@ -129,41 +129,41 @@ const Creator: React.FC = () => {
             <Paper elevation={3}>
                 <Box sx={{ padding: 2 }}>
                     {step === 1 ? <>
-                        <div className="circle-container">
-                            <div className="current-circle">1</div>
-                            <NavigateNextOutlinedIcon sx={{ color: "gray" }}></NavigateNextOutlinedIcon>
-                            <div className="circle">2</div>
-                            <NavigateNextOutlinedIcon sx={{ color: "gray" }}></NavigateNextOutlinedIcon>
-                            <div className="circle">3</div>
+                        <div className='circle-container'>
+                            <div className='current-circle'>1</div>
+                            <NavigateNextOutlinedIcon sx={{ color: 'gray' }}></NavigateNextOutlinedIcon>
+                            <div className='circle'>2</div>
+                            <NavigateNextOutlinedIcon sx={{ color: 'gray' }}></NavigateNextOutlinedIcon>
+                            <div className='circle'>3</div>
                         </div>
-                        <p className="main-title">{t('creatingMessage')}</p>
+                        <p className='main-title'>{t('creatingMessage')}</p>
                         <Grid container spacing={3}>
                             <Grid item xs={12} sm={2}>
-                                <InputLabel className="input-label">
-                                    {t("titleMessage")}
+                                <InputLabel className='input-label'>
+                                    {t('titleMessage')}
                                 </InputLabel>
                             </Grid>
                             <Grid item xs={12} sm={10}>
                                 <TextField
                                     required
-                                    id="title"
-                                    name="title"
+                                    id='title'
+                                    name='title'
                                     value={poll?.title}
                                     fullWidth
-                                    size="small"
-                                    autoComplete="off"
-                                    variant="outlined"
+                                    size='small'
+                                    autoComplete='off'
+                                    variant='outlined'
                                     onChange={(e) => handleChangePoll(e, 'title')}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={2}>
-                                <InputLabel className="input-label">
-                                    {t("descriptionMessage")}
+                                <InputLabel className='input-label'>
+                                    {t('descriptionMessage')}
                                 </InputLabel>
                             </Grid>
                             <Grid item xs={12} sm={10}>
                                 <TextField
-                                    id="description"
+                                    id='description'
                                     value={poll?.description}
                                     multiline
                                     fullWidth
@@ -172,33 +172,33 @@ const Creator: React.FC = () => {
                                 />
                             </Grid>
                             <Grid item xs={12} sm={2}>
-                                <InputLabel className="input-label">
+                                <InputLabel className='input-label'>
                                     URL
                                 </InputLabel>
                             </Grid>
                             <Grid item xs={12} sm={10}>
                                 <TextField
                                     required
-                                    id="url"
-                                    name="url"
+                                    id='url'
+                                    name='url'
                                     value={poll?.link}
                                     fullWidth
-                                    size="small"
-                                    autoComplete="off"
-                                    variant="outlined"
+                                    size='small'
+                                    autoComplete='off'
+                                    variant='outlined'
                                     onChange={(e) => handleChangePoll(e, 'link')}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={2}>
-                                <InputLabel className="input-label">
-                                    {t("statusMessage")}
+                                <InputLabel className='input-label'>
+                                    {t('statusMessage')}
                                 </InputLabel>
                             </Grid>
                             <Grid item xs={12} sm={4}>
-                                <FormControl fullWidth size="small">
+                                <FormControl fullWidth size='small'>
                                     <Select
-                                        labelId="status"
-                                        id="status"
+                                        labelId='status'
+                                        id='status'
                                         value={poll?.status}
                                         onChange={(e) => handleChangePoll(e, 'status')}>
                                         {status.map((item) => (
@@ -210,49 +210,49 @@ const Creator: React.FC = () => {
                             <Grid item xs={12} sm={6} />
                             <Grid item xs={12} sm={5} />
                             <Grid item xs={12}>
-                            <Alert severity="info">{t('addPollWarningMessage')}</Alert>
-                                <Button variant="contained" className="main-button" type="submit" name="submit-poll">
+                            <Alert severity='info'>{t('addPollWarningMessage')}</Alert>
+                                <Button variant='contained' className='main-button' type='submit' name='submit-poll'>
                                     {t('nextMessage')}
                                 </Button>
                             </Grid>
                             <Grid item xs={12} sm={5} />
                         </Grid>
                     </> : step === 2 ? <>
-                        <div className="circle-container">
-                            <div className="circle">1</div>
-                            <NavigateNextOutlinedIcon sx={{ color: "gray" }}></NavigateNextOutlinedIcon>
-                            <div className="current-circle">2</div>
-                            <NavigateNextOutlinedIcon sx={{ color: "gray" }}></NavigateNextOutlinedIcon>
-                            <div className="circle">3</div>
+                        <div className='circle-container'>
+                            <div className='circle'>1</div>
+                            <NavigateNextOutlinedIcon sx={{ color: 'gray' }}></NavigateNextOutlinedIcon>
+                            <div className='current-circle'>2</div>
+                            <NavigateNextOutlinedIcon sx={{ color: 'gray' }}></NavigateNextOutlinedIcon>
+                            <div className='circle'>3</div>
                         </div>
-                        <p className="main-title">{t('creatingOptionsMessage')}</p>
+                        <p className='main-title'>{t('creatingOptionsMessage')}</p>
                         <Grid container spacing={3}>
                             <Grid item xs={12} sm={2}>
-                                <InputLabel className="input-label">
-                                    {t("titleMessage")}
+                                <InputLabel className='input-label'>
+                                    {t('titleMessage')}
                                 </InputLabel>
                             </Grid>
                             <Grid item xs={12} sm={10}>
                                 <TextField
                                     required
-                                    id="title_option"
-                                    name="title_option"
+                                    id='title_option'
+                                    name='title_option'
                                     value={option?.title}
                                     fullWidth
-                                    size="small"
-                                    autoComplete="off"
-                                    variant="outlined"
+                                    size='small'
+                                    autoComplete='off'
+                                    variant='outlined'
                                     onChange={(e) => handleChangeOption(e, 'title')}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={2}>
-                                <InputLabel className="input-label">
-                                    {t("descriptionMessage")}
+                                <InputLabel className='input-label'>
+                                    {t('descriptionMessage')}
                                 </InputLabel>
                             </Grid>
                             <Grid item xs={12} sm={10}>
                                 <TextField
-                                    id="description_option"
+                                    id='description_option'
                                     value={option?.description}
                                     multiline
                                     fullWidth
@@ -263,10 +263,10 @@ const Creator: React.FC = () => {
                             <Grid item xs={12} sm={6} />
                             <Grid item xs={12} sm={5} />
                             <Grid item xs={12} sm={4}>
-                                <Button variant="contained" className="main-button" type="submit" name="add-option">
+                                <Button variant='contained' className='main-button' type='submit' name='add-option'>
                                     {t('addOptionMessage')}
                                 </Button>
-                                <Button variant="contained" className="main-button" type="submit" name="next-step">
+                                <Button variant='contained' className='main-button' type='submit' name='next-step'>
                                     {t('nextMessage')}
                                 </Button>
                             </Grid>
@@ -283,29 +283,29 @@ const Creator: React.FC = () => {
                             </ul>
                         </div>
                     </> : <>
-                        <div className="circle-container">
-                            <div className="circle">1</div>
-                            <NavigateNextOutlinedIcon sx={{ color: "gray" }}></NavigateNextOutlinedIcon>
-                            <div className="circle">2</div>
-                            <NavigateNextOutlinedIcon sx={{ color: "gray" }}></NavigateNextOutlinedIcon>
-                            <div className="current-circle">3</div>
+                        <div className='circle-container'>
+                            <div className='circle'>1</div>
+                            <NavigateNextOutlinedIcon sx={{ color: 'gray' }}></NavigateNextOutlinedIcon>
+                            <div className='circle'>2</div>
+                            <NavigateNextOutlinedIcon sx={{ color: 'gray' }}></NavigateNextOutlinedIcon>
+                            <div className='current-circle'>3</div>
                         </div>
-                        <p className="main-title">{t('addingCoverMessage')}</p>
+                        <p className='main-title'>{t('addingCoverMessage')}</p>
                         <Grid item xs={12} sm={2}>
-                            <InputLabel className="input-label">
-                                {t("coverMessage")}
+                            <InputLabel className='input-label'>
+                                {t('coverMessage')}
                             </InputLabel>
                         </Grid>
                         <Grid item xs={12} sm={4}>
-                        {previewSrc && <img src={previewSrc} alt="Preview" className="big-cover" />}
+                        {previewSrc && <img src={previewSrc} alt='Preview' className='big-cover' />}
                             <Button>
                                 <input
-                                    type="file"
-                                    accept="image/*"
+                                    type='file'
+                                    accept='image/*'
                                     onChange={(e) => handleChooseCover(e)}
                                 />
                             </Button>
-                            <Button variant="contained" className="main-button" type="submit" name="submit-cover">
+                            <Button variant='contained' className='main-button' type='submit' name='submit-cover'>
                                 <DoneRoundedIcon />
                             </Button>
                         </Grid>

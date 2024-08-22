@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import axiosClient from "../services/axiosInstance";
-import { Poll, Option } from "../interfaces/interfaces";
-import { Alert, Button, Collapse, Divider, Grid, InputLabel, List, ListItem, ListItemButton, ListItemText, TextField, Typography } from "@mui/material";
-import { useTranslation } from "react-i18next";
+import React, { useEffect, useState } from 'react';
+import axiosClient from '../services/axiosInstance';
+import { Poll, Option } from '../interfaces/interfaces';
+import { Alert, Button, Collapse, Divider, Grid, InputLabel, List, ListItem, ListItemButton, ListItemText, TextField, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
@@ -23,13 +23,18 @@ const Editor = () => {
   const [searchText, setSearchText] = useState<string>('');
   const [option, setOption] = React.useState<Option>({
     id: 0,
-    title: "",
-    description: "",
+    title: '',
+    description: '',
     pollId: 0,
     votesCount: 0
   });
   const [options, setOptions] = useState<Option[]>([]);
   const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
+  const [message, setMessage] = useState('');
+  const [openMessage, setOpenMessage] = useState({
+    open: false,
+    type: ''
+  });
 
   useEffect(() => {
     const fetchPollData = async () => {
@@ -53,7 +58,7 @@ const Editor = () => {
         }));
         setCovers(poll_covers);
       } catch (error) {
-        console.error("Error fetching data", error);
+        console.error('Error fetching data', error);
       }
     };
 
@@ -66,37 +71,43 @@ const Editor = () => {
     if (isOpen) {
       setOpen((prevOpen) => prevOpen.filter((openPoll) => openPoll.id !== poll.id));
       setSelectedPollId(null);
-      console.log('poll is closed');
+      setOpenMessage({ open: false, type: 'none' });
     } else {
       setOpen((prevOpen) => prevOpen.map((openPoll) => ({ ...openPoll, open: false })));
       setOpen((prevOpen) => [...prevOpen, { id: poll.id, open: true }]);
       setSelectedPollId(poll.id);
-      console.log('poll is opened');
     }
   };
 
-
   const addOption = () => {
     client.post(`/poll/${selectedPollId}`, option).then(() => {
-      client.get(`/poll/option/poll/${selectedPollId}`).then((response) => {
-        setOptions(response.data);
-      }).catch((error) => {
-        console.error("Error fetching options:", error);
-      });
+      if (option.title === '') {
+        setMessage(t('fieldsMessage'));
+        setOpenMessage({ open: true, type: 'error-add' });
+      } else {
+        setMessage(t('successCreateMessage'));
+        setOpenMessage({ open: true, type: 'success-add' });
+        client.get(`/poll/option/poll/${selectedPollId}`).then((response) => {
+          setOptions(response.data);
+        }).catch((error) => {
+          console.error('Error fetching options:', error);
+        });
+      }
     }).catch((error) => {
-      console.error("Error creating option:", error);
+      console.error('Error creating option:', error);
     });
   }
 
   const deleteOption = (id: number) => {
     client.delete(`/poll/option/${id}`).then(() => {
       client.get(`/poll/option/poll/${selectedPollId}`).then((response) => {
+        setOpenMessage({ open: false, type: '' });
         setOptions(response.data);
       }).catch((error) => {
-        console.error("Error fetching options:", error);
+        console.error('Error fetching options:', error);
       });
     }).catch((error) => {
-      console.error("Error deleting option:", error);
+      console.error('Error deleting option:', error);
     });
   }
 
@@ -132,11 +143,12 @@ const Editor = () => {
     client.delete(`/poll/${id}`).then(() => {
       client.get('/poll').then((response) => {
         setPolls(response.data);
+        setOpenMessage({ open: false, type: '' });
       }).catch((error) => {
-        console.error("Error fetching polls:", error);
+        console.error('Error fetching polls:', error);
       });
     }).catch((error) => {
-      console.error("Error deleting poll:", error);
+      console.error('Error deleting poll:', error);
     });
   }
 
@@ -164,7 +176,7 @@ const Editor = () => {
       client.get('/poll').then((response) => {
         setPolls(response.data);
       }).catch((error) => {
-        console.error("Error fetching polls:", error);
+        console.error('Error fetching polls:', error);
       });
     }
   }
@@ -182,6 +194,8 @@ const Editor = () => {
       const selectedPoll = polls.find(poll => poll.id === selectedPollId);
       if (selectedPoll) {
         client.patch(`/poll/${selectedPoll.id}`, selectedPoll).then(() => {
+          setMessage(t('successUpdateMessage'));
+          setOpenMessage({ open: true, type: 'success-update-poll' });
           if (!selectedFile) {
             console.error('No file selected');
             return;
@@ -197,24 +211,26 @@ const Editor = () => {
           })
           client.get('/poll').then((response) => {
             setPolls(response.data);
-
           }).catch((error) => {
-            console.error("Error fetching polls:", error);
+            console.error('Error fetching polls:', error);
           });
         }).catch((error) => {
-          console.error("Error updating poll:", error);
+          console.error('Error updating poll:', error);
         });
       }
     } else if (buttonName === 'update-option-button') {
       if (selectedOptionId) {
         client.patch(`/poll/option/${selectedOptionId}`, options.find(option => option.id === selectedOptionId)).then(() => {
+          setMessage(t('successUpdateMessage'));
+          setOpenMessage({ open: true, type: 'success-update' });
           client.get('/poll').then((response) => {
             setPolls(response.data);
           }).catch((error) => {
-            console.error("Error fetching polls:", error);
+            console.error('Error fetching polls:', error);
           });
+
         }).catch((error) => {
-          console.error("Error updating option:", error);
+          console.error('Error updating option:', error);
         });
       }
     } else if (buttonName === 'add-option-button') {
@@ -249,32 +265,34 @@ const Editor = () => {
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        <List subheader={<p className="subtitle-1">{t('allPollMessage')}</p>}>
-          <div className="header-container">
+        <List subheader={<p className='subtitle-1'>{t('allPollMessage')}</p>}>
+          <div className='header-container'>
             <div>
-              <Button type="submit" name="update-button" disabled={selectedPollId ? false : true}
-                variant="contained" className="main-button">
+              <Button type='submit' name='update-button' disabled={selectedPollId ? false : true}
+                variant='contained' className='main-button'>
                 <PublishedWithChangesRoundedIcon />
               </Button>
-              <Button type="submit" name="delete-button" variant="contained"
+              <Button type='submit' name='delete-button' variant='contained'
                 disabled={selectedPollId ? false : true}
-                className="main-button">
+                className='main-button'>
                 <DeleteForeverRoundedIcon />
               </Button>
               {selectedPollId ?
-                <Alert severity="info">{t('editorInfoMessage')}</Alert> : <></>
+                <Alert severity='info'>
+                  {t('editorInfoMessage')}
+                </Alert> : <></>
               }
             </div>
-            <div className="search">
-              <input type="search"
-                name="search-text"
+            <div className='search'>
+              <input type='search'
+                name='search-text'
                 placeholder={t('searchMessage')}
                 value={searchText}
                 onChange={(e) => handleSearch(e.target.value)}
-                pattern=".*\S.*"
-                className="search-text"
+                pattern='.*\S.*'
+                className='search-text'
               />
-              <button name="search-button" type="submit" className="search-button">
+              <button name='search-button' type='submit' className='search-button'>
                 <SearchRoundedIcon />
               </button>
             </div>
@@ -282,65 +300,73 @@ const Editor = () => {
           {polls.map((poll) => (
             <>
               <ListItemButton key={poll.id}
-                onClick={() => selectPoll(poll)}>
+                onClick={() => {selectPoll(poll); }}>
                 {poll.id === selectedPollId ?
                   <>
                     <ListItemText primary={
                       <div style={{ display: 'flex', alignItems: 'center' }}>
                         <Typography>{poll.title}&nbsp;</Typography>
-                        <CheckCircleRoundedIcon className='status' fontSize="small" /></div>} />
+                        <CheckCircleRoundedIcon className='status' fontSize='small' /></div>} />
                   </>
                   : <ListItemText primary={poll.title} />}
                 {open.find(open => open.id === poll.id)?.open ? <ExpandLess /> : <ExpandMore />}
               </ListItemButton>
-              <Collapse in={open.find(open => open.id === poll.id)?.open} timeout="auto" unmountOnExit>
+              <Collapse in={open.find(open => open.id === poll.id)?.open} timeout='auto' unmountOnExit>
+                <>{
+                  openMessage.type === 'success-update-poll' ?
+                    <Alert severity='success' sx={{ 'margin-top': '10px' }}>
+                      {message}
+                    </Alert> : <></>}
+                </>
                 <List disablePadding>
                   <ListItem sx={{ pl: 2 }}>
                     <Grid container spacing={2}>
                       <Grid item xs={4}>
                         <TextField
-                          variant="outlined"
-                          type="text"
+                          variant='outlined'
+                          type='text'
                           label={t('titleMessage')}
                           value={poll.title}
-                          className="table-input"
+                          className='table-input'
                           onChange={(e) => handleInputChange(e, poll.id, 'title')}
                           autoFocus
+                          required
                         />
                       </Grid>
                       <Grid item xs={8}>
                         <TextField
-                          type="text"
+                          type='text'
+                          required
                           value={poll.link}
                           label={t('linkMessage')}
-                          className="table-input"
+                          className='table-input'
                           onChange={(e) => handleInputChange(e, poll.id, 'link')}
                         />
                       </Grid>
 
                       <Grid item xs={6}>
                         <TextField
-                          variant="outlined"
-                          type="text"
+                          variant='outlined'
+                          type='text'
                           label={t('descriptionMessage')}
                           value={poll.description}
-                          className="table-input"
+                          className='table-input'
                           multiline
                           onChange={(e) => handleInputChange(e, poll.id, 'description')}
                         />
                       </Grid>
                       <Grid item xs={6}>
-                        <select className="table-input"
+                        <select className='table-input'
                           value={poll.status}
                           onChange={(e) => handleSelectChange(e, poll.id, 'status')}>
-                          <option value="active">{t('activeMessage')}</option>
-                          <option value="closed">{t('closedMessage')}</option>
+                          <option value='active'>{t('activeMessage')}</option>
+                          <option value='closed'>{t('closedMessage')}</option>
                         </select>
                       </Grid>
                       {previewSrc ?
                         <Grid item xs={3}>
                           <Typography>{t('previewImageMessage')}</Typography>
-                          {previewSrc && <img src={previewSrc} className='big-cover' width="50" />}
+                          {previewSrc && <img src={previewSrc} className='big-cover' width='50' />}
                         </Grid> : <></>
                       }
                       <Grid item xs={3}>
@@ -354,14 +380,14 @@ const Editor = () => {
                       <Grid item xs={12}>
                         <Button>
                           <input
-                            type="file"
-                            accept="image/*"
+                            type='file'
+                            accept='image/*'
                             onChange={(e) => handleСhooseCover(e)}
                           />
                         </Button>
                       </Grid>
                       <Grid>
-                        <Divider variant="middle" sx={{ 'margin': '10px' }} />
+                        <Divider variant='middle' sx={{ 'margin': '10px' }} />
                         <Typography sx={{ margin: '0px 17px' }}>{t('optionsTitleMessage')}</Typography>
                         <List>
                           {options.filter(option => option.pollId === poll.id).map((option) => (
@@ -369,70 +395,86 @@ const Editor = () => {
                               <Grid container spacing={2}>
                                 <Grid item xs={6}>
                                   <TextField
-                                    variant="outlined"
-                                    type="text"
+                                    variant='outlined'
+                                    type='text'
+                                    required
                                     label={t('titleMessage')}
                                     value={option.title}
-                                    className="table-input"
+                                    className='table-input'
                                     onChange={(e) => handleOptionChange(e, option.id, 'title')}
                                   />
                                 </Grid>
                                 <Grid item xs={6}>
                                   <TextField
-                                    variant="outlined"
-                                    type="text"
+                                    variant='outlined'
+                                    type='text'
                                     label={t('descriptionMessage')}
                                     value={option.description}
-                                    className="table-input"
+                                    className='table-input'
                                     onChange={(e) => handleOptionChange(e, option.id, 'description')}
                                   />
                                 </Grid>
                               </Grid>
-                              <Button type="submit" name="update-option-button" variant="contained" className="main-button" >
+                              <Button type='submit' name='update-option-button' variant='contained' className='main-button' >
                                 <PublishedWithChangesRoundedIcon />
                               </Button>
-                              <Button type="submit" name="delete-option-button" variant="contained" className="main-button" >
+                              <Button type='submit' name='delete-option-button' variant='contained' className='main-button' >
                                 <DeleteForeverRoundedIcon />
                               </Button>
                             </ListItem>
                           ))}
+                          <>{
+                            openMessage.type === 'success-update' ?
+                              <Alert severity='success' sx={{ 'margin-top': '10px' }}>
+                                {message}
+                              </Alert> : <></>}
+                          </>
                         </List>
                         <Grid sx={{ marginLeft: '17px' }}>
                           <Typography sx={{ marginBottom: '10px' }}>{t('addOptionMessage')}</Typography>
                           <Grid container spacing={2}>
                             <Grid item xs={4}>
                               <TextField
-                                id="title_option"
-                                name="title_option"
-                                label={t("titleMessage")}
+                                id='title_option'
+                                name='title_option'
+                                label={t('titleMessage')}
                                 value={option?.title}
-                                className="table-input"
-                                autoComplete="off"
-                                variant="outlined"
+                                className='table-input'
+                                autoComplete='off'
+                                variant='outlined'
                                 onChange={(e) => handleChangeOption(e, 'title')}
                               />
                             </Grid>
                             <Grid item xs={6}>
                               <TextField
-                                id="description_option"
-                                label={t("descriptionMessage")}
+                                id='description_option'
+                                label={t('descriptionMessage')}
                                 value={option?.description}
-                                className="table-input"
+                                className='table-input'
                                 multiline
                                 onChange={(e) => handleChangeOption(e, 'description')}
                               />
                             </Grid>
                             <Grid item xs={2}>
-                              <Button variant="contained" className="main-button" type="submit" name="add-option-button">
+                              <Button variant='contained' className='main-button' type='submit' name='add-option-button'>
                                 <AddCircleRoundedIcon />
                               </Button>
                             </Grid>
                           </Grid>
+                          <>{openMessage.type === 'error-add' ?
+                            <Alert severity='error' sx={{ 'margin-top': '10px' }}>
+                              {message}
+                            </Alert> :
+                            openMessage.type === 'success-add' ?
+                              <Alert severity='success' sx={{ 'margin-top': '10px' }}>
+                                {message}
+                              </Alert> : <></>}
+                          </>
                         </Grid>
                       </Grid>
                     </Grid>
                   </ListItem>
-                  <Divider variant="middle" sx={{ 'margin': '10px' }} />
+                  <Divider variant='middle' sx={{ 'margin': '10px' }} />
                 </List>
               </Collapse >
             </>

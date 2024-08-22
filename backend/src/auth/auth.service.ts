@@ -2,44 +2,45 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
-import { MailingService } from "src/mailing/mailing.service";
+import { MailingService } from 'src/mailing/mailing.service';
 import { RegisterDto } from './dto/register.dto';
-import { hash, verify } from "argon2";
+import { hash, verify } from 'argon2';
 import { LoginDto } from './dto/login.dto';
+import { log } from 'console';
 
 @Injectable()
 export class AuthService {
     token: string;
-    constructor(private prismaService: PrismaService,
+    constructor(private prisma: PrismaService,
         private jwt: JwtService,
         private config: ConfigService,
         private mailing: MailingService) { }
 
     async register(dto: RegisterDto) {
         try {
-            const existingUser = await this.prismaService.user.findFirst({
+            const existingUser = await this.prisma.user.findFirst({
                 where: {
                     email: dto.email
                 }
             });
 
             if (existingUser) {
-                throw new BadRequestException('User already exists')
+                throw new BadRequestException('User already exists');
+            } else {
+                const user = await this.prisma.user.create({
+                    data: {
+                        FIO: dto.FIO,
+                        email: dto.email,
+                        password: await hash(dto.password),
+                        role: dto.role,
+                        isConfirmed: false,
+                    }
+                });
+                await this.mailing.sendMail(dto.email, user.activationCode);
+                return user;
             }
-
-            const user = await this.prismaService.user.create({
-                data: {
-                    FIO: dto.FIO,
-                    email: dto.email,
-                    password: await hash(dto.password),
-                    role: dto.role,
-                    isConfirmed: false,
-                }
-            });
-            await this.mailing.sendMail(dto.email, user.activationCode);
-            return user;
         } catch (error) {
-            console.error('Error when registering a user: ', error);
+            throw new BadRequestException(error.message);
         }
     }
 
@@ -53,7 +54,7 @@ export class AuthService {
 
         if (!user.isConfirmed && user.activationCode !== null) {
             if (user.activationCode.toLowerCase() === dto.activationCode.toLowerCase()) {
-                await this.prismaService.user.update({
+                await this.prisma.user.update({
                     where: {
                         id: +user.id
                     },
@@ -75,7 +76,7 @@ export class AuthService {
     }
 
     async validateUser(dto: LoginDto) {
-        const user = await this.prismaService.user.findFirst({
+        const user = await this.prisma.user.findFirst({
             where: {
                 email: dto.email
             }
@@ -105,5 +106,10 @@ export class AuthService {
             secret: secret,
         });
         return { access_token: token };
+    }
+
+    async logout() {
+        this.token = null;
+        return { message: 'Logged out' };
     }
 }

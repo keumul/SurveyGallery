@@ -1,58 +1,173 @@
-import { useTranslation } from "react-i18next";
+import { Container, CssBaseline, Box, TextField, Button, Snackbar, IconButton, Alert } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axiosClient from '../services/axiosInstance';
+import { useTranslation } from 'react-i18next';
+import React from 'react';
 
-  export default function Register() {
-    const { t } = useTranslation();
-    return (
-      <>
-        <>
-          <div className="mb-10">
-            <h1 className="text-4xl font-bold">Sign in to your account</h1>
-          </div>
-          {/* Form */}
-          <form>
-            <div className="space-y-4">
-              <div>
-                <label
-                  className="mb-1 block text-sm font-medium text-gray-700"
-                  htmlFor="email"
-                >
-                  Email
-                </label>
-                <input
-                  id="email"
-                  className="form-input w-full py-2"
-                  type="email"
-                  placeholder="corybarker@email.com"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  className="mb-1 block text-sm font-medium text-gray-700"
-                  htmlFor="password"
-                >
-                  Password
-                </label>
-                <input
-                  id="password"
-                  className="form-input w-full py-2"
-                  type="password"
-                  autoComplete="on"
-                  placeholder="••••••••"
-                  required
-                />
-              </div>
-            </div>
-            <div className="mt-6">
-              <button className="btn w-full bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] bg-[bottom] text-white shadow hover:bg-[length:100%_150%]">
-                {t("loginMessage")}
-              </button>
-            </div>
-          </form>
-          {/* Bottom link */}
-          <div className="mt-6 text-center">
-          </div>
-        </>
-      </>
-    );
+const Register: React.FC = () => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const client = axiosClient();
+  const [info, setInfo] = useState({
+    FIO: '',
+    email: '',
+    password: '',
+    activationCode: '',
+    role: 'user',
+  });
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState('');
+  const [isCode, setIsCode] = useState(false);
+
+  const handleChange = (e: any) => {
+    const value = e.target.value;
+    setInfo({
+      ...info,
+      [e.target.name]: value
+    });
+  };
+
+  const handleRegister = (e: any) => {
+    e.preventDefault();
+    const buttonName = e.nativeEvent.submitter.name;
+    if (buttonName === 'register') {
+      register();
+    } else if (buttonName === 'code') {
+      activateCode();
+    }
+  };
+
+  const register = () => {
+    const userData = {
+      FIO: info.FIO,
+      email: info.email,
+      password: info.password,
+      role: info.role
+    };
+
+    client.post('/auth/register', userData).then((response) => {
+      setIsCode(true);
+      setOpen(false);
+    }).catch((error) => {
+      if (error.response.status === 400) {
+        setMessage(t('invalidUserMessage'));
+        setOpen(true);
+        setIsCode(false);
+      }
+    });
   }
+
+  const activateCode = () => {
+    const userData = {
+      FIO: info.FIO,
+      email: info.email,
+      password: info.password,
+      activationCode: info.activationCode
+    };
+    client.post('/auth/login', userData).then((response) => {
+      localStorage.setItem('ACCESS_TOKEN', response.data.access_token);
+      navigate('/home');
+    }).catch((error) => {
+      if (error.response.status === 400) {
+        setMessage(t('invalidCodeMessage'));
+        setOpen(true);
+      }
+    });
+  }
+
+
+  return (
+    <>
+      <form onSubmit={handleRegister}>
+        <Container maxWidth='xs'>
+          <CssBaseline />
+          <Box
+            sx={{
+              mt: 5,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}>
+
+            <p className='main-title' style={{ 'margin': '0px' }}>
+              {t('registerMessage')}</p>
+            <Box sx={{ mt: 1 }}>
+              <>{!isCode ?
+                <>
+                  <TextField
+                    required
+                    margin='dense'
+                    fullWidth
+                    id='FIO'
+                    label={t('nameMessage')}
+                    name='FIO'
+                    autoFocus
+                    value={info.FIO}
+                    onChange={handleChange}
+                  />
+
+                  <TextField
+                    required
+                    margin='dense'
+                    fullWidth
+                    id='email'
+                    label={t('emailMessage')}
+                    name='email'
+                    autoFocus
+                    value={info.email}
+                    onChange={handleChange}
+                  />
+
+                  <TextField
+                    sx={{ borderColor: '#fffff' }}
+                    margin='dense'
+                    required
+                    fullWidth
+                    name='password'
+                    label={t('passwordMessage')}
+                    type='password'
+                    id='password'
+                    value={info.password}
+                    onChange={handleChange}
+                  />
+                  {open ? <Alert
+                    severity='error'>
+                    {message}
+                  </Alert> : <></>}
+                  <Button type='submit' name='register'
+                    variant='contained' className='auth-button' fullWidth>
+                    {t('registerMessage')}
+                  </Button>
+                </> :
+                <>
+                  <TextField
+                    sx={{ borderColor: '#fffff' }}
+                    margin='dense'
+                    required
+                    fullWidth
+                    name='activationCode'
+                    label={t('codeMessage')}
+                    type='activationCode'
+                    id='activationCode'
+                    value={info.activationCode}
+                    onChange={handleChange}></TextField>
+                    {open ? <Alert
+                    severity='error'>
+                    {message}
+                  </Alert> : <></>}
+                  <Button type='submit' name='code'
+                    variant='contained' className='auth-button' fullWidth>
+                    {t('submitMessage')}
+                  </Button>
+                </>
+              }</>
+            </Box>
+          </Box>
+        </Container>
+      </form>
+    </>
+  );
+}
+
+export default Register;

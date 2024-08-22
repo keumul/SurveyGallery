@@ -4,12 +4,14 @@ import { Poll } from '../interfaces/interfaces';
 import { Box, Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 
 const Home: React.FC = (props) => {
     const { t } = useTranslation();
     const client = axiosClient();
     const [polls, setPolls] = useState<Poll[]>([]);
     const [covers, setCovers] = useState<{ id: number; cover: string }[]>([]);
+    const [searchText, setSearchText] = useState('');
 
     useEffect(() => {
         const fetchPollData = async () => {
@@ -28,7 +30,7 @@ const Home: React.FC = (props) => {
                 }));
                 setCovers(poll_covers);
             } catch (error) {
-                console.error("Error fetching data", error);
+                console.error('Error fetching data', error);
             }
         };
 
@@ -45,10 +47,43 @@ const Home: React.FC = (props) => {
         return window.btoa(binary);
     };
 
+    const handleSearch = () => {
+        searchPoll(searchText);
+    }
+
+    const searchPoll = (searchText: string) => {
+        setPolls(polls.filter(poll => poll.title.toLowerCase().includes(searchText.toLowerCase())));
+        if (searchText === '') {
+            client.get('/poll').then((response) => {
+                setPolls(response.data);
+            }).catch((error) => {
+                console.error('Error fetching polls:', error);
+            });
+        }
+    }
+
+    const handleSubmit = (e: any) => {
+        e.preventDefault();
+        handleSearch();
+    }
+
+
     return (
         <>
-            <form className='poll-form'>
-                {/* <p className='main-title'>{t('allPollMessage')}</p> */}
+            <form className='poll-form' onSubmit={handleSubmit}>
+                    <div className='search'>
+                        <input type='search'
+                            name='search-text'
+                            placeholder={t('searchMessage')}
+                            value={searchText}
+                            onChange={(e) => setSearchText(e.target.value)}
+                            pattern='.*\S.*'
+                            className='search-text'/>
+                        <button type='submit' className='search-button'>
+                            <SearchRoundedIcon />
+                        </button>
+                    </div>
+
                 <div className='poll-list'>
                     {polls.map(poll => (
                         <div className='main-poll-button'>

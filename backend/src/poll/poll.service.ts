@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PollDto } from './dto/poll.dto';
 import { OptionDto } from './dto/option.dto';
-import { VoteDto } from './dto/vote.dto';
 
 @Injectable()
 export class PollService {
@@ -45,7 +44,7 @@ export class PollService {
             });
             return poll;
         } catch (error) {
-            console.log('Error when creating the survey:', error);
+            throw new Error('Error when creating the survey: ' + error);
         }
     }
 
@@ -70,7 +69,7 @@ export class PollService {
                 return point;
             }
         } catch (error) {
-            console.log('Error when creating the point:', error);
+            throw new Error('Error when creating the point: ' + error);
         }
     }
 
@@ -83,27 +82,25 @@ export class PollService {
             });
 
             for (let option of options) {
-                const alreadyVote = await this.prisma.vote.findFirst({
+                var alreadyVote = await this.prisma.vote.findMany({
                     where: {
                         userId: +user.id,
                         optionId: +option.id
                     }
                 });
-
-                if (alreadyVote) {
-                    return true;
-                } 
-                return false;
             }
+            if (alreadyVote.length !== 0) {
+                return true;
+            } 
+            return false;
             
         } catch (error) {
-            console.log('Error when checking if the user has already voted:', error);
+            throw new Error('Error when checking if the user has already voted: ' + error);
         }
     }
 
     async addVote(user, optionId: number) {
         try {
-
             const userVote = await this.prisma.vote.create({
                 data: {
                     userId: +user.id,
@@ -120,7 +117,7 @@ export class PollService {
             });
             return userVote;
         } catch (error) {
-            console.log('Error when adding a vote:', error);
+            throw new Error('Error when adding the vote: ' + error);
         }
     }
 
@@ -157,7 +154,7 @@ export class PollService {
                 });
             }
         } catch (error) {
-            console.log('Error when updating the survey:', error);
+            throw new Error('Error when updating the survey: ' + error);
         }
     }
 
@@ -180,7 +177,7 @@ export class PollService {
                 });
             }
         } catch (error) {
-            console.log('Error when updating the point:', error);
+            throw new Error('Error when updating the point: ' + error);
         }
     }
 
@@ -205,7 +202,7 @@ export class PollService {
             }
             return winners;
         } catch (error) {
-            console.log('Error when fetching the survey:', error);
+            throw new Error('Error when fetching the current result: ' + error);
         }
     }
 
@@ -219,7 +216,7 @@ export class PollService {
             });
             return option.poll;
         } catch (error) {
-            console.log('Error when fetching the survey:', error);
+            throw new Error('Error when fetching the survey by the point id: ' + error);
         }
     }
 
@@ -241,7 +238,7 @@ export class PollService {
                 });
             }
         } catch (error) {
-            console.log('Error when closing the survey:', error);
+           throw new Error('Error when closing the survey: ' + error);
         }
     }
 
@@ -263,7 +260,7 @@ export class PollService {
                 });
             }
         } catch (error) {
-            console.log('Error when opening the survey:', error);
+            throw new Error('Error when opening the survey: ' + error);
         }
     }
 
@@ -282,7 +279,7 @@ export class PollService {
                 });
             }
         } catch (error) {
-            console.log('Error when deleting the survey:', error);
+            throw new Error('Error when deleting the survey: ' + error);
         }
     }
 
@@ -301,7 +298,7 @@ export class PollService {
                 });
             }
         } catch (error) {
-            console.log('Error when deleting the point:', error);
+            throw new Error('Error when deleting the point: ' + error);
         }
     }
 }

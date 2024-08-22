@@ -9,7 +9,7 @@ import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, Lis
 import AddToPhotosRoundedIcon from '@mui/icons-material/AddToPhotosRounded';
 import AutoFixHighRoundedIcon from '@mui/icons-material/AutoFixHighRounded';
 import BallotRoundedIcon from '@mui/icons-material/BallotRounded';
-import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded';
+import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import axiosClient from '../services/axiosInstance';
 import { User } from '../interfaces/interfaces';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +22,7 @@ const Header: React.FC = () => {
     const [openDrawer, setOpenDrawer] = React.useState(false);
     const [user, setUser] = React.useState<User>();
     const [isRegistered, setIsRegistered] = React.useState(false);
+    const [isAdmin, setIsAdmin] = React.useState(false);
 
     const handleNavigation = () => {
         navigate('/home');
@@ -31,13 +32,24 @@ const Header: React.FC = () => {
         getUser();
     })
 
+    const logout = () => {
+        navigate('/home');
+        localStorage.removeItem('ACCESS_TOKEN');
+        setIsRegistered(false);
+    }
+
     const getUser = () => {
         client.get('/users/me').then((response) => {
             if (response.data) {
                 setIsRegistered(true);
+                if (response.data.role === 'admin') {
+                    setIsAdmin(true);
+                }
+            } else {
+                setIsRegistered(false);
             }
         }).catch((error) => {
-            console.error("Error fetching user:", error);
+            console.error('Error fetching user:', error);
         }
         );
     }
@@ -48,27 +60,27 @@ const Header: React.FC = () => {
                 setUser(response.data);
             }
         }).catch((error) => {
-            console.error("Error fetching user:", error);
+            console.error('Error fetching user:', error);
         });
         setOpenDrawer(newOpen);
     };
 
     const DrawerList = (
-        <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
+        <Box sx={{ width: 250 }} role='presentation' onClick={toggleDrawer(false)}>
             <Box>
-                <p className="main-title">{t('helloMessage')}, {user?.FIO}!</p>
+                <p className='main-title'>{t('helloMessage')}, {user?.FIO}!</p>
             </Box>
             <List>
                 {[t('allPollMessage'), t('addPollMessage'), t('editPollMessage')].map((text, index) => (
                     <ListItem key={text} disablePadding>
                         {index === 0 ?
-                            <ListItemButton component={Link} to="/home">
+                            <ListItemButton component={Link} to='/home'>
                                 <BallotRoundedIcon />
                                 <ListItemText primary={text} sx={{ margin: '0 0 0 30px' }} />
-                            </ListItemButton> : index === 1 ? <ListItemButton component={Link} to="/creator">
+                            </ListItemButton> : index === 1 ? <ListItemButton component={Link} to='/creator'>
                                 <AddToPhotosRoundedIcon />
                                 <ListItemText primary={text} sx={{ margin: '0 0 0 30px' }} />
-                            </ListItemButton> : <ListItemButton component={Link} to="/editor">
+                            </ListItemButton> : <ListItemButton component={Link} to='/editor'>
                                 <AutoFixHighRoundedIcon />
                                 <ListItemText primary={text} sx={{ margin: '0 0 0 30px' }} />
                             </ListItemButton>}
@@ -77,11 +89,11 @@ const Header: React.FC = () => {
             </List>
             <Divider />
             <List>
-                {['Statistic'].map((text, index) => (
+                {[t('logoutMessage')].map((text, index) => (
                     <ListItem key={text} disablePadding>
-                        <ListItemButton>
+                        <ListItemButton onClick={logout}>
                             <ListItemIcon>
-                                {index % 2 === 0 ? <AssessmentRoundedIcon /> : <AddToPhotosRoundedIcon />}
+                                <LogoutRoundedIcon />
                             </ListItemIcon>
                             <ListItemText primary={text} />
                         </ListItemButton>
@@ -92,31 +104,39 @@ const Header: React.FC = () => {
     );
 
     return (
-        <AppBar position="static"
+        <AppBar position='static'
             sx={{ background: '#488eff' }}
         >
             <Toolbar>
-                <IconButton onClick={toggleDrawer(true)}
-                    edge="start"
-                    color="inherit"
-                    aria-label="menu"
-                    sx={{ mr: 2 }}
-                ><MenuIcon /></IconButton>
-                <Drawer open={openDrawer} onClose={toggleDrawer(false)}>
-                    {DrawerList}
-                </Drawer>
+                {isRegistered && isAdmin ?
+                    <><IconButton onClick={toggleDrawer(true)}
+                        edge='start'
+                        color='inherit'
+                        aria-label='menu'
+                        sx={{ mr: 2 }}
+                    ><MenuIcon /></IconButton>
+                        <Drawer open={openDrawer} onClose={toggleDrawer(false)}>
+                            {DrawerList}
+                        </Drawer></>
+                    : <></>
+                }
                 <div className='header-container'>
                     <p className='logo-title'
                         onClick={handleNavigation}>{t('logoMessage')}</p>
-                    <div><LanguageSelector /></div>
-                    <>
+                    <div><LanguageSelector />
                         {!isRegistered ?
                             <>
-                                <Button color="inherit" component={Link} to="/login">{t('loginMessage')}</Button>
-                                <Button color="inherit" component={Link} to="/register">{t('registerMessage')}</Button>
-                            </> : <></>
+                                <Button color='inherit' component={Link} to='/login'>{t('loginMessage')}</Button>
+                                <Button color='inherit' component={Link} to='/register'>{t('registerMessage')}</Button>
+                            </> : isRegistered && !isAdmin ? 
+                            <>
+                            <Button onClick={logout} color='inherit' >
+                                <LogoutRoundedIcon />
+                            </Button>
+                            </>
+                                : <></>
                         }
-                    </>
+                    </div>
                 </div>
             </Toolbar>
         </AppBar >

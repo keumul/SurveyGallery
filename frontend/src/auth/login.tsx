@@ -1,15 +1,6 @@
-import { BallotRounded } from '@mui/icons-material';
-import {
-    Container,
-    CssBaseline,
-    Box,
-    Typography,
-    TextField,
-    Button,
-    Grid,
-} from "@mui/material";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Container, CssBaseline, Box, TextField, Button } from '@mui/material';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axiosClient from '../services/axiosInstance';
 import { useTranslation } from 'react-i18next';
 
@@ -17,16 +8,16 @@ const Login: React.FC = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const client = axiosClient();
-    const [state, setState] = useState({
-        email: "",
-        password: "",
-        activationCode: "",
+    const [info, setInfo] = useState({
+        email: '',
+        password: '',
+        activationCode: '',
     });
     
     const handleChange = (e: any) => {
         const value = e.target.value;
-        setState({
-            ...state,
+        setInfo({
+            ...info,
             [e.target.name]: value
         });
     };
@@ -34,15 +25,15 @@ const Login: React.FC = () => {
     const handleLogin = (e: any) => {
         e.preventDefault(); 
         const userData = {
-            email: state.email,
-            password: state.password,
-            activationCode: state.activationCode
+            email: info.email,
+            password: info.password,
+            activationCode: info.activationCode
         };
-        client.post("/auth/login", userData).then((response) => {
+        client.post('/auth/login', userData).then((response) => {
             localStorage.setItem('ACCESS_TOKEN', response.data.access_token);
             navigate('/home');
         }).catch((error) => {
-            console.error("Error logging in:", error);
+            console.error('Error logging in:', error);
         });
     };
 
@@ -55,64 +46,43 @@ const Login: React.FC = () => {
                 <CssBaseline />
                 <Box
                     sx={{
-                        mt: 10,
+                        mt: 5,
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
                     }}>
 
-                    <Typography variant='h3'
-                        sx={{ color: "#0EA5E9" }}>
-                        {t('loginMessage')}</Typography>
+                    <p className='main-title' style={{'margin':'0px'}}>
+                        {t('loginMessage')}</p>
                     <Box sx={{ mt: 1 }}>
                         <TextField
-                            margin="normal"
                             required
+                            margin='dense'
                             fullWidth
-                            id="email"
+                            id='email'
                             label={t('emailMessage')}
-                            name="email"
+                            name='email'
                             autoFocus
-                            value={state.email}
+                            value={info.email}
                             onChange={handleChange}
                         />
 
                         <TextField
-                            sx={{ borderColor: "#fffff" }}
-                            margin="normal"
+                            sx={{ borderColor: '#fffff' }}
+                            margin='dense'
                             required
                             fullWidth
-                            name="password"
+                            name='password'
                             label={t('passwordMessage')}
-                            type="password"
-                            id="password"
-                            value={state.password}
+                            type='password'
+                            id='password'
+                            value={info.password}
                             onChange={handleChange}
                         />
-                        <TextField
-                            sx={{ borderColor: "#fffff" }}
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="activationCode"
-                            label={t('codeMessage')}
-                            type="activationCode"
-                            id="activationCode"
-                            value={state.activationCode}
-                            onChange={handleChange}
-                        />
-                        <Button type="submit"
-                            fullWidth
-                            variant="contained"
-                            sx={{ mt: 3, mb: 2, bgcolor: "#0EA5E9" }}
-                        >
-                            {t("loginMessage")}
+                        <Button type='submit'
+                            variant='contained' className='auth-button' fullWidth>
+                            {t('loginMessage')}
                         </Button>
-                        <Grid container justifyContent={"flex-end"}>
-                            <Grid item>
-                                <Link to="/register">Don't have an account? Register</Link>
-                            </Grid>
-                        </Grid>
                     </Box>
                 </Box>
             </Container>

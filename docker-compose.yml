@@ -26,8 +26,6 @@ services:
     image: survey-gallery-frontend:latest
     ports:
       - 80:80
-    environment:
-      REACT_APP_API_HOST: http://77.221.139.160:5000
     networks:
       - mynetwork
 networks:

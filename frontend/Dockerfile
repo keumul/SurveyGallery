@@ -10,7 +10,6 @@ RUN node --version && npm config set color false && \
 
 FROM nginx:alpine
 
-COPY --chown=node:node --from=build /app/build/.env .env
 COPY --from=builder /app/build/ /usr/share/nginx/html/
 
 ARG VERSION

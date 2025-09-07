@@ -75,6 +75,7 @@ export class PollService {
 
     async alreadyVoted(user, pollId: number) {
         try {
+            let votes = [];
             const options = await this.prisma.option.findMany({
                 where: {
                     pollId: +pollId
@@ -82,18 +83,13 @@ export class PollService {
             });
 
             for (let option of options) {
-                var alreadyVote = await this.prisma.vote.findMany({
+                votes = [...votes, ...await this.prisma.vote.findMany({
                     where: {
-                        userId: +user.id,
-                        optionId: +option.id
-                    }
-                });
+                        optionId: +option.id, 
+                        userId: +user.id
+                }})]; 
             }
-            if (alreadyVote.length !== 0) {
-                return true;
-            } 
-            return false;
-            
+            return votes.length > 0;
         } catch (error) {
             throw new Error('Error when checking if the user has already voted: ' + error);
         }
@@ -238,7 +234,7 @@ export class PollService {
                 });
             }
         } catch (error) {
-           throw new Error('Error when closing the survey: ' + error);
+            throw new Error('Error when closing the survey: ' + error);
         }
     }
 

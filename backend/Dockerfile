@@ -19,6 +19,6 @@ COPY --chown=node:node --from=build /usr/src/app/package-lock.json .
 RUN npm install --omit=dev
 COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma/client  ./node_modules/.prisma/client
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 EXPOSE 5000
 CMD ["dumb-init", "node", "dist/main"]
